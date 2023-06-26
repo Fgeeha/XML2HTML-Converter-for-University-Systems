@@ -90,7 +90,7 @@ def create_html(pk_name: str,
                     s = str(competition_type)
                     if pk_name == 'bak' or pk_name == 'mag':
                         s_competition_type = ' - ' + s[0].lower() + s[1:] + '<br> <H4>Зачисление на бюджет - в ' \
-                                                                            'соответсвии с высшим приоритетом, ' \
+                                                                            'соответствии с высшим приоритетом, ' \
                                                                             'по которому поступающий проходит по ' \
                                                                             'конкурсу</H4>'
                     else:
