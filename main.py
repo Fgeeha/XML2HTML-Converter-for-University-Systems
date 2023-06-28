@@ -1,3 +1,4 @@
+# main.py
 from creathtml import create_html
 import os
 from zipfile import ZipFile
@@ -72,6 +73,9 @@ def main():
             os.remove(f'{name_pk[_]}.xml')
             if not debug_mode:
                 shutil.move(f'{name_pk[_]}.xml.zip', f'dump/{dt_now}/{name_pk[_]}.xml.zip')
+    if not debug_mode:
+        if os.path.exists(dir_name_file_priority):
+            shutil.rmtree(dir_name_file_priority)
 
 
 if __name__ == '__main__':

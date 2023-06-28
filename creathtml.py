@@ -1,4 +1,4 @@
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ElementTree
 from spisokpriority import get_list_priority
 
 
@@ -12,7 +12,7 @@ def create_html(pk_name: str,
     if pk_name == 'bak' or pk_name == 'mag':
         row_priority = get_list_priority(dir_name=dir_name_for_priority)
     # Имя и путь к HTML файлу
-    file_html_name = f'list_on_the_website_{pk_name}_2023.html'
+    file_html_name = f'spiski_{pk_name}_2023.html'
     file_html = open(file_html_name, 'w')
     # Формируем заголовок html файла
     file_html.write('<html>\n')
@@ -32,7 +32,7 @@ def create_html(pk_name: str,
     file_html.write('         <div class="row">\n')
     file_html.write('            <div class="col">\n')
     # Парсим XML файл с именем sample.xml
-    root_node = ET.parse(f'{file_xml_name}.xml').getroot()
+    root_node = ElementTree.parse(f'{file_xml_name}.xml').getroot()
     # Получаем данные для заголовка страницы и записываем их в html файл
     enrollment = root_node.get('enrollmentCampaignTitle')
     current_date_time = str(root_node.get('currentDateTime'))
@@ -59,13 +59,13 @@ def create_html(pk_name: str,
             if faculty is not None:
                 s_faculty = str(faculty)
             # Уровень образование
-            edu_level = row_program.get('eduLevel')
-            if edu_level is not None:
-                s_edu_level = str(edu_level)
+            # edu_level = row_program.get('eduLevel')
+            # if edu_level is not None:
+            #     s_edu_level = str(edu_level)
             # На базе какой программы/уровня поступают абитуриенты
-            edu_level_requirement_genetive = row_program.get('eduLevelRequirementGenetiveTitle')
-            if edu_level_requirement_genetive is not None:
-                s_edu_level_requirement_genetive = str(edu_level_requirement_genetive)
+            # edu_level_requirement_genitive = row_program.get('eduLevelRequirementGenetiveTitle')
+            # if edu_level_requirement_genitive is not None:
+            #     s_edu_level_requirement_genitive = str(edu_level_requirement_genitive)
             # Направление
             edu_program_subject = row_program.get('eduProgramSubject')
             if edu_program_subject is not None:
@@ -225,9 +225,9 @@ def create_html(pk_name: str,
             # формируем по каждой образовательной программе информацию
             if faculty is not None:
                 file_html.write(f'                  <h5>{s_faculty}</h5>\n')
-            # if (edu_level is not None) and (edu_level_requirement_genetive is not None):
+            # if (edu_level is not None) and (edu_level_requirement_genitive is not None):
             #     file_html.write('                  <h4>'
-            #                     + s_edu_level + ', на базе ' + s_edu_level_requirement_genetive.lower() + '</h4>\n')
+            #                     + s_edu_level + ', на базе ' + s_edu_level_requirement_genitive.lower() + '</h4>\n')
             if edu_program_subject is not None:
                 file_html.write(f'                  <h2>{str(edu_program_subject)} ({s_program_spec})</h2>\n')
             if (edu_program_form is not None) and (compensation_type_short_title is not None):
@@ -243,6 +243,7 @@ def create_html(pk_name: str,
                 file_html.write('                           <th rowspan="2">№</th>\n')
                 file_html.write('                           <th rowspan="2">СНИЛС или Личный номер</th>\n')
                 file_html.write('                           <th rowspan="2">Сумма баллов</th>\n')
+                colspan = 0
                 if pk_name == 'bak' or pk_name == 'mag':
                     if pk_name == 'bak':
                         colspan = 3
@@ -264,7 +265,10 @@ def create_html(pk_name: str,
                         colspan = 1
                     elif pk_name == 'asp':
                         colspan = 2
-                    file_html.write(f'                           <th colspan="{colspan}">Результаты ВИ</th>\n')
+                    if pk_name == 'spo' and len(l_short_title) == 0:
+                        ...
+                    else:
+                        file_html.write(f'                           <th colspan="{colspan}">Результаты ВИ</th>\n')
                     file_html.write('                           <th rowspan="2">Сумма баллов за ИД</th>\n')
                     file_html.write('                           <th rowspan="2">Сдан оригинал</th>\n')
                     file_html.write('                           <th rowspan="2">Согласие на зачисление</th>\n')
@@ -273,9 +277,9 @@ def create_html(pk_name: str,
                     file_html.write('                           <th rowspan="2">Информация о зачислении</th>\n')
 
                 file_html.write('                        </tr>\n')
+                # Названия вступительных испытаний
                 if len(l_short_title) > 0:
                     file_html.write('                        <tr>\n')
-                # Названия вступительных испытаний
                     file_html.write('                           <th>' + str(l_short_title[0]) + '</th>\n')
                     if len(l_short_title) > 1:
                         file_html.write('                           <th>' + str(l_short_title[1]) + '</th>\n')
@@ -291,7 +295,11 @@ def create_html(pk_name: str,
                     """№"""
                     file_html.write(f'                           <td>{l_snils[a]}</td>\n')
                     """СНИЛС или Личный номер"""
-                    file_html.write(f'                           <td>{l_total_points[a]}</td>\n')
+                    if pk_name == 'spo':
+                        file_html.write(f'                           <td>{average_edu_institution_mark_list[a]}</td>\n')
+                        """Сумма баллов"""
+                    else:
+                        file_html.write(f'                           <td>{l_total_points[a]}</td>\n')
                     """Сумма баллов"""
                     if pk_name == 'bak' or pk_name == 'mag':
                         # print(a, ' ', l_number[a])
@@ -327,8 +335,11 @@ def create_html(pk_name: str,
                         file_html.write(f'                           <td>{l_preference_category_title[a]}</td>\n')
                         """Преимущественное право"""
                         if pk_name == 'spo':
-                            file_html.write(f'                           <td>{l_marks[a][0]}</td>\n')
-                            """Результаты ВИ"""
+                            if pk_name == 'spo' and len(l_short_title) == 0:
+                                ...
+                            else:
+                                file_html.write(f'                           <td>{l_marks[a][0]}</td>\n')
+                                """Результаты ВИ"""
                         elif pk_name == 'asp':
                             file_html.write(f'                           <td>{l_marks[a][0]}</td>\n')
                             """Результаты ВИ"""
