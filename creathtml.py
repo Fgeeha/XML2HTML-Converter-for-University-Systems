@@ -12,7 +12,10 @@ def create_html(pk_name: str,
     if pk_name == 'bak' or pk_name == 'mag':
         row_priority = get_list_priority(dir_name=dir_name_for_priority)
     # Имя и путь к HTML файлу
-    file_html_name = f'spiski_{pk_name}_2023.html'
+    if pk_name == 'bak':
+        file_html_name = f'spiski_bak_spec_2023.html'
+    else:
+        file_html_name = f'spiski_{pk_name}_2023.html'
     file_html = open(file_html_name, 'w')
     # Формируем заголовок html файла
     file_html.write('<html>\n')
