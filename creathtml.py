@@ -173,9 +173,9 @@ def create_html(pk_name: str,
                         # Приоритет при поступлении
                         preference_category_title = sub2_row_program.get('preferenceCategoryTitle')
                         if preference_category_title is not None:
-                            l_preference_category_title.append(preference_category_title)
+                            l_preference_category_title.append('ДА')
                         else:
-                            l_preference_category_title.append('нет')
+                            l_preference_category_title.append('Нет')
                     # Находим ID каждой записи в таблице, для сверки и выставления высшего приоритета
                     req_comp_id_highest_priority = sub2_row_program.get('reqCompId')
                     if req_comp_id_highest_priority is not None:
