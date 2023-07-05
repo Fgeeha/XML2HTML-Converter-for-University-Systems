@@ -11,6 +11,15 @@ def create_html(pk_name: str,
     row_priority = []
     if pk_name == 'bak' or pk_name == 'mag':
         row_priority = get_list_priority(dir_name=dir_name_for_priority)
+
+    # Парсим XML файл с именем sample.xml
+    root_node = ElementTree.parse(f'{file_xml_name}.xml').getroot()
+    # Получаем данные для заголовка страницы и записываем их в html файл
+    enrollment = root_node.get('enrollmentCampaignTitle')
+    current_date_time = str(root_node.get('currentDateTime'))
+    # формируем время по образцу: по состоянию на 16.05.2023 10:30
+    current_date_time_r = f'{current_date_time[8:10]}.'\
+                          f'{current_date_time[5:7]}.{current_date_time[:4]}  {current_date_time[11:16]}'
     # Имя и путь к HTML файлу
     if pk_name == 'bak':
         file_html_name = f'spiski_bak_spec_2023.html'
@@ -25,6 +34,7 @@ def create_html(pk_name: str,
                     'rel="stylesheet" '
                     'integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" '
                     'crossorigin="anonymous">\n')
+    file_html.write(f'      <title>{enrollment}</title>\n')
     file_html.write('   </head>\n')
     # Формируем тело html файла
     file_html.write('   <body>\n')
@@ -34,14 +44,7 @@ def create_html(pk_name: str,
     file_html.write('      <div class="container-fluid">\n')
     file_html.write('         <div class="row">\n')
     file_html.write('            <div class="col">\n')
-    # Парсим XML файл с именем sample.xml
-    root_node = ElementTree.parse(f'{file_xml_name}.xml').getroot()
-    # Получаем данные для заголовка страницы и записываем их в html файл
-    enrollment = root_node.get('enrollmentCampaignTitle')
-    current_date_time = str(root_node.get('currentDateTime'))
-    # формируем время по образцу: по состоянию на 16.05.2023 10:30
-    current_date_time_r = f'{current_date_time[8:10]}.' \
-                          f'{current_date_time[5:7]}.{current_date_time[:4]}  {current_date_time[11:16]}'
+
     file_html.write(f'               <h1>{enrollment}<small class="text-muted"> '
                     f'по состоянию на {current_date_time_r}</small></h1>\n')
     file_html.write('               <hr>\n')
@@ -55,6 +58,7 @@ def create_html(pk_name: str,
             s_edu_program_form = ''
             s_plan_recruitment = ''
             s_competition_type = ''
+            s_competition_type_title = ''
             # Формируем заголовок каждой образовательной программы с названием факультета,
             # название программы, профилем и пр.
             # Факультет
@@ -87,6 +91,7 @@ def create_html(pk_name: str,
             # условия поступления
             competition_type = row_program.get('competitionType')
             if competition_type is not None:
+                s_competition_type_title = str(competition_type)
                 if s_compensation_type_short_title == 'по договору':
                     s_competition_type = ''
                 else:
@@ -107,7 +112,7 @@ def create_html(pk_name: str,
                 if s_compensation_type_short_title == 'по договору':
                     s_plan_recruitment = str(plan_recruitment)
                 else:
-                    s_plan_recruitment = str(plan_recruitment) + ' за исключением других квот'
+                    s_plan_recruitment = str(plan_recruitment) + ' за исключением квот'
                 # print(s_plan_recruitment)
 
             # Инициируем начальные данные по каждому абитуриенту в каждой образовательной программе
@@ -124,6 +129,7 @@ def create_html(pk_name: str,
             l_status = []
             l_print_priority = []
             l_req_comp_id_highest_priority = []
+            l_benefit_special_category_title = []
             l_l_accepted = []
             """list Согласие на зачисление"""
             average_edu_institution_mark_list = []
@@ -144,39 +150,47 @@ def create_html(pk_name: str,
                         l_short_title.append(short_title)
 
                     # Собираем данные для таблицы по каждому абитуриенту на каждой программе
-
-                    number = None
-                    snils = sub2_row_program.get('snils')
-                    """Снилс ИЛИ Номер"""
-                    if snils is not None:
-                        statement += 1
-                        l_snils.append(snils)
-                    else:
-                        for PersonalNumber in sub2_row_program.findall('entrantPersonalNumber'):
-                            number = PersonalNumber.text
-                            statement += 1
-                            l_snils.append(number)
-                    if sub2_row_program.get('acceptedEntrant') is not None \
-                            and (sub2_row_program.get('snils') is not None or number is not None):
-
-                        l_accepted = sub2_row_program.get('acceptedEntrant')
-                        """Согласие на зачисление"""
-                        if l_accepted == 'true':
-                            l_l_accepted.append('да')
-                        elif l_accepted == 'false' or l_accepted is None:
-                            l_l_accepted.append('нет')
-
                     position = sub2_row_program.get('position')
                     """Номер по порядку"""
                     if position is not None:
                         l_number.append(position)
                         # Приоритет при поступлении
                         preference_category_title = sub2_row_program.get('preferenceCategoryTitle')
+                        benefit_special_category_title = sub2_row_program.get('benefitSpecialCategoryTitle')
                         if preference_category_title is not None:
-                            l_preference_category_title.append('ДА')
+                            l_preference_category_title.append('Да')
                         else:
                             l_preference_category_title.append('Нет')
+                        if benefit_special_category_title is not None:
+                            l_benefit_special_category_title.append(benefit_special_category_title)
+                        else:
+                            l_benefit_special_category_title.append('-')
                     # Находим ID каждой записи в таблице, для сверки и выставления высшего приоритета
+
+                    number = None
+                    snils = sub2_row_program.get('snils')
+                    """Снилс ИЛИ Номер"""
+                    if position is not None:
+                        if snils is None or s_competition_type_title == 'Отдельная квота':
+                            for PersonalNumber in sub2_row_program.findall('entrantPersonalNumber'):
+                                number = PersonalNumber.text
+                                statement += 1
+                                l_snils.append(number)
+                        else:
+                            statement += 1
+                            l_snils.append(snils)
+
+                    if sub2_row_program.get('acceptedEntrant') is not None \
+                            and (sub2_row_program.get('snils') is not None or number is not None):
+
+                        l_accepted = sub2_row_program.get('acceptedEntrant')
+                        """Согласие на зачисление"""
+                        if l_accepted == 'true':
+                            l_l_accepted.append('Да')
+                        elif l_accepted == 'false' or l_accepted is None:
+                            l_l_accepted.append('Нет')
+
+
                     req_comp_id_highest_priority = sub2_row_program.get('reqCompId')
                     if req_comp_id_highest_priority is not None:
                         l_req_comp_id_highest_priority.append(str(req_comp_id_highest_priority))
@@ -217,14 +231,15 @@ def create_html(pk_name: str,
                     original_passed = sub2_row_program.get('originalIn')
                     if original_passed is not None:
                         if original_passed == 'false':
-                            l_original_passed.append('нет')
+                            l_original_passed.append('Нет')
                         if original_passed == 'true':
-                            l_original_passed.append('да')
+                            l_original_passed.append('Да')
 
                     # Приоритет
                     print_priority = sub2_row_program.get('printPriority')
                     if print_priority is not None:
                         l_print_priority.append(print_priority)
+
             # формируем по каждой образовательной программе информацию
             if faculty is not None:
                 file_html.write(f'                  <h5>{s_faculty}</h5>\n')
@@ -236,6 +251,10 @@ def create_html(pk_name: str,
             if (edu_program_form is not None) and (compensation_type_short_title is not None):
                 file_html.write(f'                  <h3>{s_edu_program_form} форма обучения, '
                                 f'{s_compensation_type_short_title + s_competition_type} </h3>\n')
+            # Заканчиваем формирования блока по каждому направлению
+            if (edu_program_form is not None) and (plan_recruitment is not None):
+                file_html.write(f'                  <p> Заявлений — {statement}, '
+                                f'число мест — {s_plan_recruitment}</p>\n')
             # Если есть заявления, то формируем таблицу со списком абитуриентов
             if statement > 0:
                 # Заголовок таблицы
@@ -274,7 +293,8 @@ def create_html(pk_name: str,
                         file_html.write(f'                           <th colspan="{colspan}">Результаты ВИ</th>\n')
                     file_html.write('                           <th rowspan="2">Сумма баллов за ИД</th>\n')
                     file_html.write('                           <th rowspan="2">Сдан оригинал</th>\n')
-                    file_html.write('                           <th rowspan="2">Согласие на зачисление</th>\n')
+                    if pk_name == 'asp':
+                        file_html.write('                           <th rowspan="2">Согласие на зачисление</th>\n')
                     file_html.write('                           <th rowspan="2">Статус</th>\n')
                     file_html.write('                           <th rowspan="2">Примечание</th>\n')
                     file_html.write('                           <th rowspan="2">Информация о зачислении</th>\n')
@@ -293,7 +313,15 @@ def create_html(pk_name: str,
                 file_html.write('                       <tbody>\n')
                 # Формируем строку по каждому студенту
                 for a in range(len(l_number)):
-                    file_html.write('                         <tr>\n')
+                    vip_priority = ''
+                    if l_req_comp_id_highest_priority[a] in row_priority:
+                        vip_priority = 'Да'
+                    if (pk_name == 'bak' or pk_name == 'mag') \
+                            and l_original_passed[a] == 'Да' \
+                            and vip_priority == 'Да':
+                        file_html.write('                         <tr class="table-success">\n')
+                    else:
+                        file_html.write('                         <tr>\n')
                     file_html.write(f'                           <td>{l_number[a]}</td>\n')
                     """№"""
                     file_html.write(f'                           <td>{l_snils[a]}</td>\n')
@@ -352,8 +380,9 @@ def create_html(pk_name: str,
                         """Сумма баллов за ИД"""
                         file_html.write(f'                           <td>{l_original_passed[a]}</td>\n')
                         """Сдан оригинал"""
-                        file_html.write(f'                           <td>{l_l_accepted[a]}</td>\n')
-                        """Согласие на зачисление"""
+                        if pk_name == 'asp':
+                            file_html.write(f'                           <td>{l_l_accepted[a]}</td>\n')
+                            """Согласие на зачисление"""
                         file_html.write(f'                           <td>{l_status[a]}</td>\n')
                         """Статус"""
                         file_html.write(f'                           <td></td>\n')
@@ -365,10 +394,6 @@ def create_html(pk_name: str,
                 file_html.write('                       </tbody>\n')
                 file_html.write('                     </table>\n')
                 file_html.write('                  </div>\n')
-            # Заканчиваем формирования блока по каждому направлению
-            if (edu_program_form is not None) and (plan_recruitment is not None):
-                file_html.write(f'                  <p> Заявлений — {statement}, '
-                                f'число мест — {s_plan_recruitment}</p>\n')
             if faculty is not None:
                 file_html.write('                  <hr>\n')
     # Завершаем формирования html страница
