@@ -2,6 +2,7 @@
 /dump/
 /file_priority/
 /output/
+/test_xml/
 *.html
 *.xml
 *.zip

@@ -48,6 +48,24 @@ def create_html(pk_name: str,
     file_html.write(f'               <h1>{enrollment}<small class="text-muted"> '
                     f'по состоянию на {current_date_time_r}</small></h1>\n')
     file_html.write('               <hr>\n')
+    # Парсим на два уровня вниз. Здесь нам ищем все снилсы
+    l_snils_in_another_competition = []
+    """СНИЛСы есть в конкурсе Отдельная квота"""
+    if pk_name == 'bak' or pk_name == 'mag':
+        for competition in root_node:
+            for row_program in competition:
+                s_competition_type_title = ''
+                competition_type = row_program.get('competitionType')
+                if competition_type is not None:
+                    s_competition_type_title = str(competition_type)
+                for sub_row_program in row_program:
+                    for sub2_row_program in sub_row_program:
+                        position = sub2_row_program.get('position')
+                        snils = sub2_row_program.get('snils')
+                        if position is not None:
+                            if s_competition_type_title == 'Отдельная квота':
+                                if snils not in l_snils_in_another_competition:
+                                    l_snils_in_another_competition.append(snils)
     # Парсим на два уровня вниз. Здесь нам нужны образовательные программы
     for competition in root_node:
         for row_program in competition:
@@ -82,12 +100,10 @@ def create_html(pk_name: str,
             edu_program_form = row_program.get('eduProgramForm')
             if edu_program_form is not None:
                 s_edu_program_form = str(edu_program_form)
-                # print(eduProgramForm)
             # Договор/бюджет
             compensation_type_short_title = row_program.get('compensationTypeShortTitle')
             if compensation_type_short_title is not None:
                 s_compensation_type_short_title = str(compensation_type_short_title)
-                # print(compensation_type_short_title)
             # условия поступления
             competition_type = row_program.get('competitionType')
             if competition_type is not None:
@@ -103,9 +119,6 @@ def create_html(pk_name: str,
                                                                             'конкурсу</H4>'
                     else:
                         s_competition_type = f' - {s[0].lower() + s[1:]}'
-                    """соответствии с высшим приоритетом"""
-                    """Зачисление на бюджет - в соответствии с высшим 
-                    приоритетом, по которому поступающий проходит по конкурсу"""
             # Число планируемых мест
             plan_recruitment = row_program.get('plan')
             if plan_recruitment is not None:
@@ -118,18 +131,31 @@ def create_html(pk_name: str,
             # Инициируем начальные данные по каждому абитуриенту в каждой образовательной программе
             s_program_spec = ''
             statement = 0
+            """Количество заявлений"""
             l_short_title = []
+            """Вступительные испытания"""
             l_number = []
+            """Номер заявлений по порядку"""
             l_snils = []
+            """СНИЛС"""
             l_total_points = []
+            """Сумма баллов"""
             l_preference_category_title = []
+            """Преимущественное право зачисления"""
             l_marks = []
+            """Результаты ВИ"""
             l_total_points_id = []
+            """Сумма баллов за индивидуальные достижения"""
             l_original_passed = []
+            """Сдан оригинал:да/нет"""
             l_status = []
+            """Статус"""
             l_print_priority = []
+            """Приоритет"""
             l_req_comp_id_highest_priority = []
+            """Нужно для Высший приоритет"""
             l_benefit_special_category_title = []
+            """Отдельная квота"""
             l_l_accepted = []
             """list Согласие на зачисление"""
             average_edu_institution_mark_list = []
@@ -171,7 +197,11 @@ def create_html(pk_name: str,
                     snils = sub2_row_program.get('snils')
                     """Снилс ИЛИ Номер"""
                     if position is not None:
-                        if snils is None or s_competition_type_title == 'Отдельная квота':
+                        if snils is None \
+                                or s_competition_type_title == 'Отдельная квота' \
+                                or snils in l_snils_in_another_competition:
+                            """убрать последую строчку 
+                            если нужен снилс для тех кто на ОК но подал и на другие конкурсы"""
                             for PersonalNumber in sub2_row_program.findall('entrantPersonalNumber'):
                                 number = PersonalNumber.text
                                 statement += 1
@@ -320,6 +350,8 @@ def create_html(pk_name: str,
                             and l_original_passed[a] == 'Да' \
                             and vip_priority == 'Да':
                         file_html.write('                         <tr class="table-success">\n')
+                        # if int(l_print_priority[a]) > 1:
+                        #     print(l_snils[a])
                     else:
                         file_html.write('                         <tr>\n')
                     file_html.write(f'                           <td>{l_number[a]}</td>\n')
