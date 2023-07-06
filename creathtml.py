@@ -198,84 +198,83 @@ def create_html(pk_name: str,
                             l_benefit_special_category_title.append(benefit_special_category_title)
                         else:
                             l_benefit_special_category_title.append('-')
-                    # Находим ID каждой записи в таблице, для сверки и выставления высшего приоритета
+                        # Находим ID каждой записи в таблице, для сверки и выставления высшего приоритета
 
-                    number = None
-                    snils = sub2_row_program.get('snils')
-                    """Снилс ИЛИ Номер"""
-                    if position is not None:
-                        if snils is None \
-                                or s_competition_type_title == 'Отдельная квота' \
-                                or snils in l_snils_in_another_competition:
-                            """убрать последую строчку 
-                            если нужен снилс для тех кто на ОК но подал и на другие конкурсы"""
-                            for PersonalNumber in sub2_row_program.findall('entrantPersonalNumber'):
-                                number = PersonalNumber.text
+                        number = None
+                        snils = sub2_row_program.get('snils')
+                        """Снилс ИЛИ Номер"""
+                        if position is not None:
+                            if snils is None \
+                                    or s_competition_type_title == 'Отдельная квота' \
+                                    or snils in l_snils_in_another_competition:
+                                """убрать последую строчку 
+                                если нужен снилс для тех кто на ОК но подал и на другие конкурсы"""
+                                for PersonalNumber in sub2_row_program.findall('entrantPersonalNumber'):
+                                    number = PersonalNumber.text
+                                    statement += 1
+                                    l_snils.append(number)
+                            else:
                                 statement += 1
-                                l_snils.append(number)
-                        else:
-                            statement += 1
-                            l_snils.append(snils)
+                                l_snils.append(snils)
 
-                    if sub2_row_program.get('acceptedEntrant') is not None \
-                            and (sub2_row_program.get('snils') is not None or number is not None):
-                        l_accepted = sub2_row_program.get('acceptedEntrant')
-                        """Согласие на зачисление"""
-                        if l_accepted == 'true':
-                            l_l_accepted.append('Да')
-                        elif l_accepted == 'false' or l_accepted is None:
-                            l_l_accepted.append('Нет')
+                        if sub2_row_program.get('acceptedEntrant') is not None \
+                                and (sub2_row_program.get('snils') is not None or number is not None):
+                            l_accepted = sub2_row_program.get('acceptedEntrant')
+                            """Согласие на зачисление"""
+                            if l_accepted == 'true':
+                                l_l_accepted.append('Да')
+                            elif l_accepted == 'false' or l_accepted is None:
+                                l_l_accepted.append('Нет')
 
+                        req_comp_id_highest_priority = sub2_row_program.get('reqCompId')
+                        if req_comp_id_highest_priority is not None:
+                            l_req_comp_id_highest_priority.append(str(req_comp_id_highest_priority))
+                            # print(str(req_comp_id_highest_priority))
 
-                    req_comp_id_highest_priority = sub2_row_program.get('reqCompId')
-                    if req_comp_id_highest_priority is not None:
-                        l_req_comp_id_highest_priority.append(str(req_comp_id_highest_priority))
-                        # print(str(req_comp_id_highest_priority))
+                        status = sub2_row_program.get('status')
+                        if status is not None:
+                            l_status.append(status)
 
-                    status = sub2_row_program.get('status')
-                    if status is not None:
-                        l_status.append(status)
-
-                    if pk_name == 'spo' and position is not None:
-                        """Средний балл по аттестату"""
-                        average_edu_institution_mark = sub2_row_program.get('averageEduInstitutionMark')
-                        if average_edu_institution_mark is None:
-                            average_edu_institution_mark = '-'
-                        average_edu_institution_mark_list.append(average_edu_institution_mark)
-
-                    total_points = sub2_row_program.get('finalMark')
-                    """Сумма баллов"""
-                    if total_points is not None:
-                        l_total_points.append(total_points)
-                        if pk_name == 'spo' and status == 'Сданы ВИ' and total_points != '—':
-                            if total_points == '—':
-                                average_edu_institution_mark = average_edu_institution_mark.split()
-                                l_total_points.append(average_edu_institution_mark)
-                    # Результаты сдачи вступительных испытаний (по трем сразу)
-                    marks = sub2_row_program.get('marks')
-                    if marks is not None:
                         if pk_name == 'spo':
-                            if marks == '':
-                                marks = '—'
-                        s = marks.split()
-                        l_marks.append(s)
+                            """Средний балл по аттестату"""
+                            average_edu_institution_mark = sub2_row_program.get('averageEduInstitutionMark')
+                            if average_edu_institution_mark is None:
+                                average_edu_institution_mark = '-'
+                            average_edu_institution_mark_list.append(average_edu_institution_mark)
 
-                    # Сумма баллов за индивидуальные достижения
-                    total_points_id = sub2_row_program.get('achievementMark')
-                    if total_points_id is not None:
-                        l_total_points_id.append(total_points_id)
-                    # Сдан оригинал:да/нет
-                    original_passed = sub2_row_program.get('originalIn')
-                    if original_passed is not None:
-                        if original_passed == 'false':
-                            l_original_passed.append('Нет')
-                        if original_passed == 'true':
-                            l_original_passed.append('Да')
+                        total_points = sub2_row_program.get('finalMark')
+                        """Сумма баллов"""
+                        if total_points is not None:
+                            l_total_points.append(total_points)
+                            if pk_name == 'spo' and status == 'Сданы ВИ' and total_points != '—':
+                                if total_points == '—':
+                                    average_edu_institution_mark = average_edu_institution_mark.split()
+                                    l_total_points.append(average_edu_institution_mark)
+                        # Результаты сдачи вступительных испытаний (по трем сразу)
+                        marks = sub2_row_program.get('marks')
+                        if marks is not None:
+                            if pk_name == 'spo':
+                                if marks == '':
+                                    marks = '—'
+                            s = marks.split()
+                            l_marks.append(s)
 
-                    # Приоритет
-                    print_priority = sub2_row_program.get('printPriority')
-                    if print_priority is not None:
-                        l_print_priority.append(print_priority)
+                        # Сумма баллов за индивидуальные достижения
+                        total_points_id = sub2_row_program.get('achievementMark')
+                        if total_points_id is not None:
+                            l_total_points_id.append(total_points_id)
+                        # Сдан оригинал:да/нет
+                        original_passed = sub2_row_program.get('originalIn')
+                        if original_passed is not None:
+                            if original_passed == 'false':
+                                l_original_passed.append('Нет')
+                            if original_passed == 'true':
+                                l_original_passed.append('Да')
+
+                        # Приоритет
+                        print_priority = sub2_row_program.get('printPriority')
+                        if print_priority is not None:
+                            l_print_priority.append(print_priority)
 
             # формируем по каждой образовательной программе информацию
             if faculty is not None:

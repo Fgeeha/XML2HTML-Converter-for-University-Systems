@@ -3,6 +3,8 @@
 /file_priority/
 /output/
 /test_xml/
+/.idea/
+/__pycache__/
 *.html
 *.xml
 *.zip

@@ -38,10 +38,6 @@ def main():
                'asp': 'enr_rating_1747566037455466749'
                }
 
-    if os.path.exists(dir_name_file_priority):
-        shutil.rmtree(dir_name_file_priority)
-    os.mkdir(dir_name_file_priority)
-
     if not debug_mode:
         check_dir('dump')
         os.mkdir(f'dump/{dt_now}')
@@ -49,6 +45,9 @@ def main():
     for _ in name_pk:
         if _ == 'mag' or _ == 'bak':
             file_name_enr_recommended = ''
+            if os.path.exists(dir_name_file_priority):
+                shutil.rmtree(dir_name_file_priority)
+            os.mkdir(dir_name_file_priority)
             if _ == 'mag':
                 file_name_enr_recommended = file_name_enr_recommended_mag
             elif _ == 'bak':
@@ -66,11 +65,15 @@ def main():
                     os.remove(f'{name_pk[_]}.xml')
                 except OSError as e:
                     print(f"Error: {e.filename} - {e.strerror}.")
+
             with gzip.open(f"{name_pk[_]}.xml.zip", 'rb') as f_in:
                 with open(f"{name_pk[_]}.xml", 'wb') as f_out:
                     shutil.copyfileobj(f_in, f_out)
             create_html(pk_name=_, file_xml_name=f'{name_pk[_]}', dir_name_for_priority=dir_name_file_priority)
             os.remove(f'{name_pk[_]}.xml')
+
+            if os.path.exists(dir_name_file_priority):
+                shutil.rmtree(dir_name_file_priority)
             if not debug_mode:
                 shutil.move(f'{name_pk[_]}.xml.zip', f'dump/{dt_now}/{name_pk[_]}.xml.zip')
     if not debug_mode:
