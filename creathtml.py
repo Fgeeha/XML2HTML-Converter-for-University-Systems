@@ -92,7 +92,10 @@ def create_html(pk_name: str,
             # if edu_level_requirement_genitive is not None:
             #     s_edu_level_requirement_genitive = str(edu_level_requirement_genitive)
             # Направление
-            edu_program_subject = row_program.get('eduProgramSubject')
+            if pk_name == 'spo':
+                edu_program_subject = row_program.get('programSetPrintTitle')
+            else:
+                edu_program_subject = row_program.get('eduProgramSubject')
             if edu_program_subject is not None:
                 ...
                 # print(edu_program_subject)
@@ -125,7 +128,10 @@ def create_html(pk_name: str,
                 if s_compensation_type_short_title == 'по договору':
                     s_plan_recruitment = str(plan_recruitment)
                 else:
-                    s_plan_recruitment = str(plan_recruitment) + ' за исключением квот'
+                    if pk_name == 'spo':
+                        s_plan_recruitment = str(plan_recruitment)
+                    else:
+                        s_plan_recruitment = str(plan_recruitment) + ' за исключением квот'
                 # print(s_plan_recruitment)
 
             # Инициируем начальные данные по каждому абитуриенту в каждой образовательной программе
@@ -159,6 +165,7 @@ def create_html(pk_name: str,
             l_l_accepted = []
             """list Согласие на зачисление"""
             average_edu_institution_mark_list = []
+            """СПО Средний балл по аттестат"""
 
             # Опускаемся на два уровня до данных по каждому абитуриенту
             for sub_row_program in row_program:
@@ -212,7 +219,6 @@ def create_html(pk_name: str,
 
                     if sub2_row_program.get('acceptedEntrant') is not None \
                             and (sub2_row_program.get('snils') is not None or number is not None):
-
                         l_accepted = sub2_row_program.get('acceptedEntrant')
                         """Согласие на зачисление"""
                         if l_accepted == 'true':
@@ -225,11 +231,12 @@ def create_html(pk_name: str,
                     if req_comp_id_highest_priority is not None:
                         l_req_comp_id_highest_priority.append(str(req_comp_id_highest_priority))
                         # print(str(req_comp_id_highest_priority))
-                        # Статус
+
                     status = sub2_row_program.get('status')
                     if status is not None:
                         l_status.append(status)
-                    if pk_name == 'spo':
+
+                    if pk_name == 'spo' and position is not None:
                         """Средний балл по аттестату"""
                         average_edu_institution_mark = sub2_row_program.get('averageEduInstitutionMark')
                         if average_edu_institution_mark is None:
@@ -277,7 +284,10 @@ def create_html(pk_name: str,
             #     file_html.write('                  <h4>'
             #                     + s_edu_level + ', на базе ' + s_edu_level_requirement_genitive.lower() + '</h4>\n')
             if edu_program_subject is not None:
-                file_html.write(f'                  <h2>{str(edu_program_subject)} ({s_program_spec})</h2>\n')
+                if pk_name == 'spo':
+                    file_html.write(f'                  <h2>{str(edu_program_subject)}</h2>\n')
+                else:
+                    file_html.write(f'                  <h2>{str(edu_program_subject)} ({s_program_spec})</h2>\n')
             if (edu_program_form is not None) and (compensation_type_short_title is not None):
                 file_html.write(f'                  <h3>{s_edu_program_form} форма обучения, '
                                 f'{s_compensation_type_short_title + s_competition_type} </h3>\n')
