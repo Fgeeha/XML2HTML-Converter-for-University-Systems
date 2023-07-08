@@ -74,8 +74,10 @@ def main():
 
             if os.path.exists(dir_name_file_priority):
                 shutil.rmtree(dir_name_file_priority)
+
             if not debug_mode:
                 shutil.move(f'{name_pk[_]}.xml.zip', f'dump/{dt_now}/{name_pk[_]}.xml.zip')
+
     if not debug_mode:
         if os.path.exists(dir_name_file_priority):
             shutil.rmtree(dir_name_file_priority)

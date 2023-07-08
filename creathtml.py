@@ -11,7 +11,6 @@ def create_html(pk_name: str,
     row_priority = []
     if pk_name == 'bak' or pk_name == 'mag':
         row_priority = get_list_priority(dir_name=dir_name_for_priority)
-
     # Парсим XML файл с именем sample.xml
     root_node = ElementTree.parse(f'{file_xml_name}.xml').getroot()
     # Получаем данные для заголовка страницы и записываем их в html файл
@@ -77,6 +76,8 @@ def create_html(pk_name: str,
             s_plan_recruitment = ''
             s_competition_type = ''
             s_competition_type_title = ''
+            edu_program_subject = ''
+            edu_program_id = ''
             # Формируем заголовок каждой образовательной программы с названием факультета,
             # название программы, профилем и пр.
             # Факультет
@@ -96,6 +97,7 @@ def create_html(pk_name: str,
                 edu_program_subject = row_program.get('programSetPrintTitle')
             else:
                 edu_program_subject = row_program.get('eduProgramSubject')
+                edu_program_id = row_program.get('id')
             if edu_program_subject is not None:
                 ...
                 # print(edu_program_subject)
@@ -136,6 +138,8 @@ def create_html(pk_name: str,
 
             # Инициируем начальные данные по каждому абитуриенту в каждой образовательной программе
             s_program_spec = ''
+            l_row_entrant_req_com_id_and_ent_id_and_com_id = []
+            """массив для проверки"""
             statement = 0
             """Количество заявлений"""
             l_short_title = []
@@ -144,6 +148,8 @@ def create_html(pk_name: str,
             """Номер заявлений по порядку"""
             l_snils = []
             """СНИЛС"""
+            l_entrant_id = []
+            """id"""
             l_total_points = []
             """Сумма баллов"""
             l_preference_category_title = []
@@ -166,6 +172,8 @@ def create_html(pk_name: str,
             """list Согласие на зачисление"""
             average_edu_institution_mark_list = []
             """СПО Средний балл по аттестат"""
+            l_vip_priority = []
+            """Высший приоритет (Да/' ')"""
 
             # Опускаемся на два уровня до данных по каждому абитуриенту
             for sub_row_program in row_program:
@@ -202,6 +210,7 @@ def create_html(pk_name: str,
 
                         number = None
                         snils = sub2_row_program.get('snils')
+                        entrant_id = sub2_row_program.get('entrantId')
                         """Снилс ИЛИ Номер"""
                         if position is not None:
                             if snils is None \
@@ -216,65 +225,77 @@ def create_html(pk_name: str,
                             else:
                                 statement += 1
                                 l_snils.append(snils)
+                            l_entrant_id.append(entrant_id)
+                            if sub2_row_program.get('acceptedEntrant') is not None \
+                                    and (sub2_row_program.get('snils') is not None or number is not None):
+                                l_accepted = sub2_row_program.get('acceptedEntrant')
+                                """Согласие на зачисление"""
+                                if l_accepted == 'true':
+                                    l_l_accepted.append('Да')
+                                elif l_accepted == 'false' or l_accepted is None:
+                                    l_l_accepted.append('Нет')
 
-                        if sub2_row_program.get('acceptedEntrant') is not None \
-                                and (sub2_row_program.get('snils') is not None or number is not None):
-                            l_accepted = sub2_row_program.get('acceptedEntrant')
-                            """Согласие на зачисление"""
-                            if l_accepted == 'true':
-                                l_l_accepted.append('Да')
-                            elif l_accepted == 'false' or l_accepted is None:
-                                l_l_accepted.append('Нет')
+                            req_comp_id_highest_priority = sub2_row_program.get('reqCompId')
+                            if req_comp_id_highest_priority is not None:
+                                l_req_comp_id_highest_priority.append(str(req_comp_id_highest_priority))
+                                # print(str(req_comp_id_highest_priority))
 
-                        req_comp_id_highest_priority = sub2_row_program.get('reqCompId')
-                        if req_comp_id_highest_priority is not None:
-                            l_req_comp_id_highest_priority.append(str(req_comp_id_highest_priority))
-                            # print(str(req_comp_id_highest_priority))
+                            status = sub2_row_program.get('status')
+                            if status is not None:
+                                l_status.append(status)
 
-                        status = sub2_row_program.get('status')
-                        if status is not None:
-                            l_status.append(status)
-
-                        if pk_name == 'spo':
-                            """Средний балл по аттестату"""
-                            average_edu_institution_mark = sub2_row_program.get('averageEduInstitutionMark')
-                            if average_edu_institution_mark is None:
-                                average_edu_institution_mark = '-'
-                            average_edu_institution_mark_list.append(average_edu_institution_mark)
-
-                        total_points = sub2_row_program.get('finalMark')
-                        """Сумма баллов"""
-                        if total_points is not None:
-                            l_total_points.append(total_points)
-                            if pk_name == 'spo' and status == 'Сданы ВИ' and total_points != '—':
-                                if total_points == '—':
-                                    average_edu_institution_mark = average_edu_institution_mark.split()
-                                    l_total_points.append(average_edu_institution_mark)
-                        # Результаты сдачи вступительных испытаний (по трем сразу)
-                        marks = sub2_row_program.get('marks')
-                        if marks is not None:
                             if pk_name == 'spo':
-                                if marks == '':
-                                    marks = '—'
-                            s = marks.split()
-                            l_marks.append(s)
+                                """Средний балл по аттестату"""
+                                average_edu_institution_mark = sub2_row_program.get('averageEduInstitutionMark')
+                                if average_edu_institution_mark is None:
+                                    average_edu_institution_mark = '-'
+                                average_edu_institution_mark_list.append(average_edu_institution_mark)
 
-                        # Сумма баллов за индивидуальные достижения
-                        total_points_id = sub2_row_program.get('achievementMark')
-                        if total_points_id is not None:
-                            l_total_points_id.append(total_points_id)
-                        # Сдан оригинал:да/нет
-                        original_passed = sub2_row_program.get('originalIn')
-                        if original_passed is not None:
-                            if original_passed == 'false':
-                                l_original_passed.append('Нет')
-                            if original_passed == 'true':
-                                l_original_passed.append('Да')
+                            total_points = sub2_row_program.get('finalMark')
+                            """Сумма баллов"""
+                            if total_points is not None:
+                                l_total_points.append(total_points)
+                                if pk_name == 'spo' and status == 'Сданы ВИ' and total_points != '—':
+                                    if total_points == '—':
+                                        average_edu_institution_mark = average_edu_institution_mark.split()
+                                        l_total_points.append(average_edu_institution_mark)
+                            # Результаты сдачи вступительных испытаний (по трем сразу)
+                            marks = sub2_row_program.get('marks')
+                            if marks is not None:
+                                if pk_name == 'spo':
+                                    if marks == '':
+                                        marks = '—'
+                                s = marks.split()
+                                l_marks.append(s)
 
-                        # Приоритет
-                        print_priority = sub2_row_program.get('printPriority')
-                        if print_priority is not None:
-                            l_print_priority.append(print_priority)
+                            # Сумма баллов за индивидуальные достижения
+                            total_points_id = sub2_row_program.get('achievementMark')
+                            if total_points_id is not None:
+                                l_total_points_id.append(total_points_id)
+                            # Сдан оригинал:да/нет
+                            original_passed = sub2_row_program.get('originalIn')
+                            if original_passed is not None:
+                                if original_passed == 'false':
+                                    l_original_passed.append('Нет')
+                                if original_passed == 'true':
+                                    l_original_passed.append('Да')
+
+                            # Приоритет
+                            print_priority = sub2_row_program.get('printPriority')
+                            if print_priority is not None:
+                                l_print_priority.append(print_priority)
+                            l_row_entrant_req_com_id_and_ent_id_and_com_id.append((entrant_id,
+                                                                                   req_comp_id_highest_priority,
+                                                                                   edu_program_id))
+                            if pk_name == 'bak' or pk_name == 'mag':
+                                vip_priority = ' '
+                                for list_row_priority in row_priority:
+                                    if entrant_id == list_row_priority[0] \
+                                            and req_comp_id_highest_priority == list_row_priority[1] \
+                                            and edu_program_id == list_row_priority[2]:
+                                        vip_priority = 'Да'
+                                l_vip_priority.append(vip_priority)
+
 
             # формируем по каждой образовательной программе информацию
             if faculty is not None:
@@ -352,12 +373,9 @@ def create_html(pk_name: str,
                 file_html.write('                       <tbody>\n')
                 # Формируем строку по каждому студенту
                 for a in range(len(l_number)):
-                    vip_priority = ''
-                    if l_req_comp_id_highest_priority[a] in row_priority:
-                        vip_priority = 'Да'
                     if (pk_name == 'bak' or pk_name == 'mag') \
                             and l_original_passed[a] == 'Да' \
-                            and vip_priority == 'Да':
+                            and l_vip_priority[a] == 'Да':
                         file_html.write('                         <tr class="table-success">\n')
                         # if int(l_print_priority[a]) > 1:
                         #     print(l_snils[a])
@@ -375,10 +393,7 @@ def create_html(pk_name: str,
                     """Сумма баллов"""
                     if pk_name == 'bak' or pk_name == 'mag':
                         # print(a, ' ', l_number[a])
-                        vip_priority = ''
-                        if l_req_comp_id_highest_priority[a] in row_priority:
-                            vip_priority = 'Да'
-                            # print(l_req_comp_id_highest_priority)
+                        # print(l_req_comp_id_highest_priority)
                         if pk_name == 'bak':
                             file_html.write(f'                           <td>{l_marks[a][0]}</td>\n')
                             """Результаты ВИ"""
@@ -401,8 +416,8 @@ def create_html(pk_name: str,
                         """Договор на оказание платных образовательных услуг"""
                         file_html.write(f'                           <td>{l_print_priority[a]}</td>\n')
                         """Приоритет"""
-                        file_html.write(f'                           <td>{vip_priority}</td>\n')
-                        """Высший приоритет (Да/'')"""
+                        file_html.write(f'                           <td>{l_vip_priority[a]}</td>\n')
+                        """Высший приоритет (Да/' ')"""
                     elif pk_name == 'spo' or pk_name == 'asp':
                         file_html.write(f'                           <td>{l_preference_category_title[a]}</td>\n')
                         """Преимущественное право"""
