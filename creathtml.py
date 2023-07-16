@@ -293,9 +293,11 @@ def create_html(pk_name: str,
                                     if entrant_id == list_row_priority[0] \
                                             and req_comp_id_highest_priority == list_row_priority[1] \
                                             and edu_program_id == list_row_priority[2]:
-                                        vip_priority = 'Да'
+                                        if list_row_priority[3] and not list_row_priority[4]:
+                                            vip_priority = 'Да'
+                                        else:
+                                            vip_priority = 'Да*'
                                 l_vip_priority.append(vip_priority)
-
 
             # формируем по каждой образовательной программе информацию
             if faculty is not None:
