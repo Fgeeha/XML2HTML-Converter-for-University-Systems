@@ -1,6 +1,6 @@
-/venv/
-/.idea/
-/__pycache__/
+venv/
+.idea/
+__pycache__/
 
 /dump/
 /file_priority/
@@ -14,3 +14,4 @@
 *.xml
 *.zip
 *.spec
+*.pyc
