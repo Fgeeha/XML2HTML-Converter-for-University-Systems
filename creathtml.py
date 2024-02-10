@@ -20,10 +20,7 @@ def create_html(pk_name: str,
     current_date_time_r = f'{current_date_time[8:10]}.'\
                           f'{current_date_time[5:7]}.{current_date_time[:4]}  {current_date_time[11:16]}'
     # Имя и путь к HTML файлу
-    if pk_name == 'bak':
-        file_html_name = f'spiski_bak_spec_2023.html'
-    else:
-        file_html_name = f'spiski_{pk_name}_2023.html'
+    file_html_name = f'spiski_{pk_name}_2023.html'
     file_html = open(file_html_name, 'w')
     # Формируем заголовок html файла
     file_html.write('<html>\n')
@@ -172,6 +169,7 @@ def create_html(pk_name: str,
             """list Согласие на зачисление"""
             average_edu_institution_mark_list = []
             """СПО Средний балл по аттестат"""
+            
             l_vip_priority = []
             """Высший приоритет (Да/' ')"""
 
@@ -296,7 +294,7 @@ def create_html(pk_name: str,
                                         if list_row_priority[3] and not list_row_priority[4]:
                                             vip_priority = 'Да'
                                         else:
-                                            vip_priority = 'Да*'
+                                            vip_priority = ''
                                 l_vip_priority.append(vip_priority)
 
             # формируем по каждой образовательной программе информацию
