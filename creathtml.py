@@ -20,7 +20,7 @@ def create_html(pk_name: str,
     current_date_time_r = f'{current_date_time[8:10]}.'\
                           f'{current_date_time[5:7]}.{current_date_time[:4]}  {current_date_time[11:16]}'
     # Имя и путь к HTML файлу
-    file_html_name = f'spiski_{pk_name}_2023.html'
+    file_html_name = f'spiski_{pk_name}_2024.html'
     file_html = open(file_html_name, 'w')
     # Формируем заголовок html файла
     file_html.write('<html>\n')
@@ -31,6 +31,7 @@ def create_html(pk_name: str,
                     'integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" '
                     'crossorigin="anonymous">\n')
     file_html.write(f'      <title>{enrollment}</title>\n')
+    file_html.write('      <meta charset="UTF-8">\n')
     file_html.write('   </head>\n')
     # Формируем тело html файла
     file_html.write('   <body>\n')

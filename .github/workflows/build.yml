@@ -1,0 +1,65 @@
+name: Build and Deploy EXE
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install poetry
+        shell: pwsh
+        run: |
+          Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+          Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
+          scoop install pipx
+          pipx ensurepath
+          pipx install poetry
+          poetry completions bash >> ~/.bash_completion
+
+      - name: Update Poetry lock file
+        shell: pwsh
+        run: |
+          poetry lock --no-update
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          poetry install
+
+      - name: Build EXE
+        shell: pwsh
+        run: |
+          poetry run pyinstaller --noconfirm --onefile --windowed "main.py"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1.1.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+      - name: Upload EXE to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/main.exe
+          asset_name: main.exe
+          asset_content_type: application/octet-stream

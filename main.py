@@ -13,7 +13,7 @@ def check_dir(dir_name: str) -> None:
 
 
 def main():
-    debug_mode = False
+    debug_mode = True
     """
     False - transferring files to a folder dump
     True - zip archives remain in the root folder
@@ -35,7 +35,7 @@ def main():
     name_pk = {'bak': 'enr_rating_1747824879895441661',
                'mag': 'enr_rating_1747848868372017405',
                'spo': 'enr_rating_1756521485483241725',
-               'asp': 'enr_rating_1747566037455466749'
+               'asp': 'enr_rating_1780891192879345917'
                }
 
     if not debug_mode:
