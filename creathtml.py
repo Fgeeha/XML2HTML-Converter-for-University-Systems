@@ -31,7 +31,7 @@ def create_html(pk_name: str,
                     'integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" '
                     'crossorigin="anonymous">\n')
     file_html.write(f'      <title>{enrollment}</title>\n')
-    # file_html.write('      <meta charset="UTF-8">\n')
+    file_html.write('      <meta charset="UTF-8">\n')
     file_html.write('   </head>\n')
     # Формируем тело html файла
     file_html.write('   <body>\n')
