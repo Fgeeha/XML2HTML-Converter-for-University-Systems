@@ -13,7 +13,7 @@ def check_dir(dir_name: str) -> None:
 
 
 def main():
-    debug_mode = True
+    debug_mode = False
     """
     False - transferring files to a folder dump
     True - zip archives remain in the root folder
