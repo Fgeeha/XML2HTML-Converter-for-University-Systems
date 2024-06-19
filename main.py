@@ -12,6 +12,16 @@ def check_dir(dir_name: str) -> None:
         os.mkdir(f'{dir_name}')
 
 
+def add_file_to_archive(archive_name, file_path):
+    # Проверяем, существует ли архив
+    archive_exists = os.path.exists(archive_name)
+    
+    # Открываем архив для добавления файлов
+    with ZipFile(archive_name, 'a' if archive_exists else 'w') as archive:
+        # Добавляем файл в архив
+        archive.write(file_path, os.path.basename(file_path))
+
+
 def main():
     debug_mode = False
     """
@@ -42,7 +52,8 @@ def main():
     if not debug_mode:
         check_dir('dump')
         os.mkdir(f'dump/{dt_now}')
-
+        
+    
     for _ in name_pk:
         if _ == 'mag' or _ == 'bak':
             file_name_enr_recommended = ''
@@ -71,7 +82,12 @@ def main():
                 with open(f"{name_pk[_]}.xml", 'wb') as f_out:
                     shutil.copyfileobj(f_in, f_out)
             create_html(pk_name=_, file_xml_name=f'{name_pk[_]}', dir_name_for_priority=dir_name_file_priority)
+            if _ == 'mag' or _ == 'bak' or _ == 'spo':
+                add_file_to_archive('lists_2024.zip', f'lists_{_}_2024.html')
+                check_dir(f'dump/{dt_now}/html')
+                shutil.move(f'lists_{_}_2024.html',f'dump/{dt_now}/html/lists_{_}_2024.html')
             os.remove(f'{name_pk[_]}.xml')
+            
 
             if os.path.exists(dir_name_file_priority):
                 shutil.rmtree(dir_name_file_priority)

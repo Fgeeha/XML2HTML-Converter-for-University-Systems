@@ -20,7 +20,7 @@ def create_html(pk_name: str,
     current_date_time_r = f'{current_date_time[8:10]}.'\
                           f'{current_date_time[5:7]}.{current_date_time[:4]}  {current_date_time[11:16]}'
     # Имя и путь к HTML файлу
-    file_html_name = f'spiski_{pk_name}_2024.html'
+    file_html_name = f'lists_{pk_name}_2024.html'
     file_html = open(file_html_name, 'w', encoding='utf-8')
     # Формируем заголовок html файла
     file_html.write('<html>\n')
