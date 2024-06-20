@@ -37,8 +37,8 @@ def main():
         dt_now = str(time1)
 
     # Название файлов для высшего приоритета
-    file_name_enr_recommended_bak = 'enr_recommended_enrollment_list_1747824879895441661.zip'
-    file_name_enr_recommended_mag = 'enr_recommended_enrollment_list_1747848868372017405.zip'
+    file_name_enr_recommended_bak = 'enr_recommended_enrollment_list_1780165749254516989.zip'
+    file_name_enr_recommended_mag = 'enr_recommended_enrollment_list_1780165823923613949.zip'
     # Название директории где будет высший приоритет
     dir_name_file_priority = 'file_priority'
     # словарь ( краткое название ПК : названия файла до расширения)
