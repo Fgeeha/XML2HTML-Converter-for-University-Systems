@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <title>{{ enrollment }}</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+      crossorigin="anonymous"
+    />
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <style type="text/css">
+      .enr-entrant-row-cutoff td {
+        border-bottom: 6px solid #555;
+      }
+    </style>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col">
+          <h1>
+            {{ enrollment }}<small class="text-muted">
+              по состоянию на {{ current_date_time }}
+            </small>
+          </h1>
+          <hr />
+          {% for info_id in range(information|length) %}
+          <h5>{{ information[info_id].faculty[0] }}</h5>
+          {% if pk_name == 'spo' %}
+          <h2>{{ information[info_id].edu_program_subject[0] }}</h2>
+          {% else %}
+          <h2>
+            {{ information[info_id].edu_program_subject[0] }} ({{
+            information[info_id].program_spec[0] }})
+          </h2>
+          {% endif %}
+          <h3>
+            {{ information[info_id].edu_program_form[0] }} форма обучения, {{
+            information[info_id].compensation_type_short_title[0] }} {{
+            information[info_id].competition_type[0] }}
+          </h3>
+          <p>
+            Заявлений — {{ information[info_id].statement[0] }}, число мест — {{
+            information[info_id].plan_recruitment[0] }}
+          </p>
+          {% if information[info_id].statement[0] > 0 %}
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover">
+              <thead>
+                <tr>
+                  <th rowspan="2">№</th>
+                  <th rowspan="2">СНИЛС или Личный номер</th>
+                  <th rowspan="2">Сумма баллов</th>
+                  {% if pk_name in ("bak", "mag") %}
+                  <th colspan="{{ information[info_id].colspan[0] }}">
+                    Результаты ВИ
+                  </th>
+                  <th rowspan="2">Сумма баллов за ИД</th>
+                  <th rowspan="2">Основание приема без ВИ</th>
+                  <th rowspan="2">Преимущественное право зачисления</th>
+                  <th rowspan="2">Сдан оригинал (отметка на ЕПГУ)</th>
+                  <th rowspan="2">
+                    Договор на оказание платных образовательных услуг
+                  </th>
+                  <th rowspan="2">Приоритет</th>
+                  <th rowspan="2">Высший приоритет</th>
+                  {% elif pk_name in ("spo", "asp") %}
+                  <th rowspan="2">Преимущественное право</th>
+                  {% if pk_name == "spo" and
+                  information[info_id].short_title[0]|length == 0 %} {% else %}
+                  <th colspan="{{ information[info_id].colspan[0] }}">
+                    Результаты ВИ
+                  </th>
+                  {% endif %}
+                  <th rowspan="2">Сумма баллов за ИД</th>
+                  <th rowspan="2">Сдан оригинал</th>
+                  {% if pk_name == "asp" %}
+                  <th rowspan="2">Согласие на зачисление</th>
+                  {% endif %}
+                  <th rowspan="2">Статус</th>
+                  <th rowspan="2">Примечание</th>
+                  <th rowspan="2">Информация о зачислении</th>
+                  {% endif %}
+                </tr>
+                {% if information[info_id].short_title[0]|length > 0 %}
+                <tr>
+                  <th>{{ information[info_id].short_title[0][0] }}</th>
+                  {% if information[info_id].short_title[0]|length > 1 %}
+                  <th>{{ information[info_id].short_title[0][1] }}</th>
+                  {% if information[info_id].short_title[0]|length > 2 %}
+                  <th>{{ information[info_id].short_title[0][2] }}</th>
+                  {% endif %} {% endif %}
+                </tr>
+                {% endif %}
+              </thead>
+              <tbody>
+                {% for student_id in range(students[info_id].number|length) %}
+                {% set student = students[info_id] %} {% if pk_name in ("bak",
+                "mag") and student.original_passed[student_id] == 'Да' and
+                student.vip_priority[student_id] == 'Да' %}
+                <tr class="table-success">
+                  {% else %}
+                </tr>
+
+                <tr>
+                  {% endif %}
+                  <td>{{ student.number[student_id] }}</td>
+                  <td>{{ student.snils[student_id] }}</td>
+                  <td>{{ student.total_points[student_id] }}</td>
+                  {% if pk_name in ("bak", "mag") %} {% if pk_name == "bak" %}
+                  <td>{{ student.marks[student_id][0] }}</td>
+                  <td>{{ student.marks[student_id][1] }}</td>
+                  <td>{{ student.marks[student_id][2] }}</td>
+                  {% elif pk_name == "mag" %}
+                  <td>{{ student.marks[student_id][0] }}</td>
+                  {% endif %}
+                  <td>{{ student.total_points_id[student_id] }}</td>
+                  <td></td>
+                  <td>{{ student.preference_category_title[student_id] }}</td>
+                  <td>{{ student.original_passed[student_id] }}</td>
+                  <td></td>
+                  <td>{{ student.print_priority[student_id] }}</td>
+                  <td>{{ student.vip_priority[student_id] }}</td>
+                  {% elif pk_name in ("spo", "asp") %}
+                  <td>{{ student.preference_category_title[student_id] }}</td>
+                  {% if pk_name == "spo" and
+                  information[info_id].short_title[0]|length == 0 %} {% elif
+                  pk_name == "spo" and
+                  information[info_id].short_title[0]|length > 0%}
+                  <td>{{ student.marks[student_id][0] }}</td>
+                  {% elif pk_name == "asp" %}
+                  <td>{{ student.marks[student_id][0] }}</td>
+                  <td>{{ student.marks[student_id][1] }}</td>
+                  {% endif %}
+                  <td>{{ student.total_points_id[student_id] }}</td>
+                  <td>{{ student.original_passed[student_id] }}</td>
+                  {% if pk_name == "asp" %}
+                  <td>{{ student.accepted[student_id] }}</td>
+                  {% endif %}
+                  <td>{{ student.status[student_id] }}</td>
+                  <td></td>
+                  <td></td>
+                  {% endif %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% endif %} {% if information[info_id].faculty %}
+          <hr />
+          {% endif %} {% endfor %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
