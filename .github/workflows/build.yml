@@ -41,7 +41,7 @@ jobs:
       - name: Build EXE
         shell: pwsh
         run: |
-          poetry run pyinstaller --noconfirm --onefile --windowed "main.py"
+          poetry run pyinstaller --noconfirm --onefile --windowed --add-data "src/template/template.html;template" --icon="img/volgau_gerb.ico" main.py
 
       - name: Create Release
         id: create_release
