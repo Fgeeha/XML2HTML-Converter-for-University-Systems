@@ -1,9 +1,8 @@
-import os
-from zipfile import ZipFile
 import gzip
+import os
 import shutil
 from datetime import datetime
-
+from zipfile import ZipFile
 
 from src.core.config import settings
 from src.template.crete_html import create_html

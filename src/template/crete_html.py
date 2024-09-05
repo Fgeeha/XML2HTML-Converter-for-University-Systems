@@ -1,16 +1,33 @@
-import xml.etree.ElementTree as ElementTree
-from src.list_priority import get_list_priority
-import sys
 import os
-from jinja2 import Environment, FileSystemLoader
+import sys
+
+from defusedxml.ElementTree import (
+    parse,
+    XMLParser,
+)
+from jinja2 import (
+    Environment,
+    FileSystemLoader,
+)
+
+from src.list_priority import get_list_priority
 
 
 def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) -> None:
-
     row_priority = []  # Создаем список записей в которых есть высший приоритет
     if pk_name in ("bak", "mag"):
-        row_priority = get_list_priority(dir_name=dir_name_for_priority)
-    root_node = ElementTree.parse(f"{file_xml_name}.xml").getroot()
+        row_priority = get_list_priority(
+            dir_name=dir_name_for_priority,
+        )
+    parser = XMLParser(
+        forbid_dtd=True,
+        forbid_entities=True,
+        forbid_external=True,
+    )
+    root_node = parse(
+        f"{file_xml_name}.xml",
+        parser=parser,
+    ).getroot()
     enrollment = root_node.get("enrollmentCampaignTitle")
     current_date_time = str(root_node.get("currentDateTime"))
     current_date_time = (
@@ -47,7 +64,6 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
             # Инициируем переменных
             s_compensation_type_short_title = ""
             average_edu_institution_mark = ""
-            s_plan_recruitment = ""
             s_competition_type = ""
             s_competition_type_title = ""
             edu_program_subject = ""
@@ -60,7 +76,7 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                 edu_program_id = row_program.get("id")
             edu_program_form = row_program.get("eduProgramForm")
             compensation_type_short_title = row_program.get(
-                "compensationTypeShortTitle"
+                "compensationTypeShortTitle",
             )
             if compensation_type_short_title is not None:
                 s_compensation_type_short_title = str(compensation_type_short_title)
@@ -95,7 +111,6 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                             str(plan_recruitment) + " за исключением квот"
                         )
             # Инициируем начальные данные по каждому абитуриенту в каждой образовательной программе
-            s_program_spec = ""
             l_row_entrant_req_com_id_and_ent_id_and_com_id = []  # массив для проверки
             statement = 0  # Количество заявлений
             l_short_title = []  # Вступительные испытания
@@ -134,10 +149,10 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                             l_number.append(int(x)) for x in position.split()
                         ]  # Приоритет при поступлении
                         preference_category_title = sub2_row_program.get(
-                            "preferenceCategoryTitle"
+                            "preferenceCategoryTitle",
                         )
                         benefit_special_category_title = sub2_row_program.get(
-                            "benefitSpecialCategoryTitle"
+                            "benefitSpecialCategoryTitle",
                         )
                         if preference_category_title is not None:
                             l_preference_category_title.append("Да")
@@ -145,7 +160,7 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                             l_preference_category_title.append("Нет")
                         if benefit_special_category_title is not None:
                             l_benefit_special_category_title.append(
-                                benefit_special_category_title
+                                benefit_special_category_title,
                             )
                         else:
                             l_benefit_special_category_title.append("-")
@@ -154,7 +169,7 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                         number = None
                         snils = sub2_row_program.get("snils")
                         entrant_id = sub2_row_program.get(
-                            "entrantId"
+                            "entrantId",
                         )  # Снилс ИЛИ Номер
                         if position is not None:
                             if (
@@ -164,7 +179,7 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                             ):
 
                                 for PersonalNumber in sub2_row_program.findall(
-                                    "entrantPersonalNumber"
+                                    "entrantPersonalNumber",
                                 ):
                                     number = PersonalNumber.text
                                     statement += 1
@@ -178,7 +193,7 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                                 or number is not None
                             ):
                                 l_accepted = sub2_row_program.get(
-                                    "acceptedEntrant"
+                                    "acceptedEntrant",
                                 )  # Согласие на зачисление
 
                                 if l_accepted == "true":
@@ -187,11 +202,11 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                                     l_l_accepted.append("Нет")
 
                             req_comp_id_highest_priority = sub2_row_program.get(
-                                "reqCompId"
+                                "reqCompId",
                             )
                             if req_comp_id_highest_priority is not None:
                                 l_req_comp_id_highest_priority.append(
-                                    str(req_comp_id_highest_priority)
+                                    str(req_comp_id_highest_priority),
                                 )
 
                             status = sub2_row_program.get("status")
@@ -200,16 +215,16 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
 
                             if pk_name == "spo":
                                 average_edu_institution_mark = sub2_row_program.get(
-                                    "averageEduInstitutionMark"
+                                    "averageEduInstitutionMark",
                                 )  # Средний балл по аттестату
                                 if average_edu_institution_mark is None:
                                     average_edu_institution_mark = "-"
                                 average_edu_institution_mark_list.append(
-                                    average_edu_institution_mark
+                                    average_edu_institution_mark,
                                 )
 
                             total_points = sub2_row_program.get(
-                                "finalMark"
+                                "finalMark",
                             )  # Сумма баллов
                             if total_points is not None:
                                 l_total_points.append(total_points)
@@ -223,11 +238,11 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                                             average_edu_institution_mark.split()
                                         )
                                         l_total_points.append(
-                                            average_edu_institution_mark
+                                            average_edu_institution_mark,
                                         )
 
                             marks = sub2_row_program.get(
-                                "marks"
+                                "marks",
                             )  # Результаты сдачи вступительных испытаний (по 3 сразу)
                             if marks is not None:
                                 if pk_name == "spo":
@@ -237,13 +252,13 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                                 l_marks.append(s)
 
                             total_points_id = sub2_row_program.get(
-                                "achievementMark"
+                                "achievementMark",
                             )  # Сумма баллов за индивидуальные достижения
                             if total_points_id is not None:
                                 l_total_points_id.append(total_points_id)
 
                             original_passed = sub2_row_program.get(
-                                "originalIn"
+                                "originalIn",
                             )  # Сдан оригинал:да/нет
                             if original_passed is not None:
                                 if original_passed == "false":
@@ -252,7 +267,7 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                                     l_original_passed.append("Да")
 
                             print_priority = sub2_row_program.get(
-                                "printPriority"
+                                "printPriority",
                             )  # Приоритет
                             if print_priority is not None:
                                 l_print_priority.append(print_priority)
@@ -261,7 +276,7 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                                     entrant_id,
                                     req_comp_id_highest_priority,
                                     edu_program_id,
-                                )
+                                ),
                             )
                             if pk_name in ("bak", "mag"):
                                 vip_priority = " "
@@ -301,7 +316,6 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                     "statement": [],
                     "colspan": [],
                     "short_title": [],
-                    "competition_type": [],
                 }
 
                 info_list["faculty"].append(faculty)
@@ -309,7 +323,7 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                 info_list["program_spec"].append(program_spec)
                 info_list["edu_program_form"].append(edu_program_form)
                 info_list["compensation_type_short_title"].append(
-                    compensation_type_short_title
+                    compensation_type_short_title,
                 )
                 info_list["edu_program_form"].append(edu_program_form)
                 info_list["plan_recruitment"].append(plan_recruitment)

@@ -1,19 +1,32 @@
 import os
-import xml.etree.ElementTree as ElementTree
+
+from defusedxml.ElementTree import (
+    parse,
+    XMLParser,
+)
 
 
-def get_list_priority(dir_name: str) -> list[(str, str, str, bool, bool), ...]:
+def get_list_priority(dir_name: str) -> list[(str, str, str, bool, bool)]:
     l_row_entrant_priority = []
     l_file = os.listdir(dir_name)
+    parser = XMLParser(
+        forbid_dtd=True,
+        forbid_entities=True,
+        forbid_external=True,
+    )
     for f in l_file:
         path_file = f"{dir_name}/{f}"
-        root_node = ElementTree.parse(path_file).getroot()
-        is_budget = True if root_node.get("isBudget") == "true" else False
-        """Если бюджет True, если платное False"""
-        is_agree = True if root_node.get("isAgree") == "true" else False
-        """Если по согласию (поданные оригиналы) True, если поданным конкурсам False"""
-        # is_priority_step = True if root_node.get('isPriorityStep') == 'true' else False
-        """Если приоритетный этап True, иначе False"""
+        root_node = parse(path_file, parser=parser).getroot()
+        is_budget = (
+            True if root_node.get("isBudget") == "true" else False
+        )  # Если бюджет True, если платное False.
+        is_agree = (
+            True if root_node.get("isAgree") == "true" else False
+        )  # Если по согласию (поданные оригиналы) True, если поданным конкурсам False.
+
+        is_priority_step = (
+            True if root_node.get("isPriorityStep") == "true" else False
+        )  # Если приоритетный этап True, иначе False Закомитить после приоритетного этапа
 
         for row in root_node:
             l_row_entrant_req_com_id_and_ent_id_and_com_id = []
@@ -26,7 +39,7 @@ def get_list_priority(dir_name: str) -> list[(str, str, str, bool, bool), ...]:
                         row_entrant_entrant_id,
                         row_entrant_req_com_id,
                         row_entrant_competition_id,
-                    )
+                    ),
                 )
                 if (
                     l_row_entrant_req_com_id_and_ent_id_and_com_id[0]
@@ -41,6 +54,7 @@ def get_list_priority(dir_name: str) -> list[(str, str, str, bool, bool), ...]:
                             row_entrant_competition_id,
                             is_budget,
                             is_agree,
-                        )
+                            is_priority_step,
+                        ),
                     )
     return l_row_entrant_priority
