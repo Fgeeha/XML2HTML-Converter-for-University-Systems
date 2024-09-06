@@ -250,10 +250,24 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                                         marks = "—"
                                 s = marks.split()
                                 l_marks.append(s)
+                            if pk_name == "asp":
+                                total_points_id = 0
+                                for mark_entrant_achievements in sub_row_program:
+                                    achievements = mark_entrant_achievements.findall(
+                                        "markEntrantAchievements",
+                                    )
 
-                            total_points_id = sub2_row_program.get(
-                                "achievementMark",
-                            )  # Сумма баллов за индивидуальные достижения
+                                    if achievements:
+                                        for achievement in achievements:
+                                            achievement_list = int(
+                                                achievement.text.split(" ")[-1],
+                                            )
+                                            total_points_id += achievement_list
+                                        # на выходе total_points_id
+                            else:
+                                total_points_id = sub2_row_program.get(
+                                    "achievementMark",
+                                )  # Сумма баллов за индивидуальные достижения
                             if total_points_id is not None:
                                 l_total_points_id.append(total_points_id)
 
