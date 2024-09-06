@@ -16,7 +16,10 @@ def get_list_priority(dir_name: str) -> list[(str, str, str, bool, bool)]:
     )
     for f in l_file:
         path_file = f"{dir_name}/{f}"
-        root_node = parse(path_file, parser=parser).getroot()
+        root_node = parse(
+            path_file,
+            parser=parser,
+        ).getroot()
         is_budget = (
             True if root_node.get("isBudget") == "true" else False
         )  # Если бюджет True, если платное False.
