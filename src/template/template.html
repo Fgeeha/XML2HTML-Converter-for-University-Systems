@@ -94,6 +94,7 @@
                 </tr>
                 {% endif %}
               </thead>
+              <!-- prettier-ignore -->
               <tbody>
                 {% for student_id in range(students[info_id].number|length) %}
                 {% set student = students[info_id] %} {% if pk_name in ("bak",
@@ -101,8 +102,6 @@
                 student.vip_priority[student_id] == 'Да' %}
                 <tr class="table-success">
                   {% else %}
-                </tr>
-
                 <tr>
                   {% endif %}
                   <td>{{ student.number[student_id] }}</td>
@@ -145,6 +144,7 @@
                 </tr>
                 {% endfor %}
               </tbody>
+              <!-- код, который не будет отформатирован Prettier -->
             </table>
           </div>
           {% endif %} {% if information[info_id].faculty %}
