@@ -97,4 +97,4 @@ This project is licensed under the MIT License.
 
 ---
 
-For further information, please refer to the [repository](https://github.com/Fgeeha/parse_xml_file_volgau).
+For further information, please refer to the [repository](https://github.com/Fgeeha/XML2HTML-Converter-for-University-Systems).
