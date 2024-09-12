@@ -1,24 +1,16 @@
 import os
 
-from defusedxml.ElementTree import (
-    parse,
-    XMLParser,
-)
+from defusedxml.ElementTree import parse
 
 
 def get_list_priority(dir_name: str) -> list[(str, str, str, bool, bool)]:
     l_row_entrant_priority = []
     l_file = os.listdir(dir_name)
-    parser = XMLParser(
-        forbid_dtd=True,
-        forbid_entities=True,
-        forbid_external=True,
-    )
     for f in l_file:
         path_file = f"{dir_name}/{f}"
         root_node = parse(
             path_file,
-            parser=parser,
+            forbid_dtd=True,
         ).getroot()
         is_budget = (
             True if root_node.get("isBudget") == "true" else False

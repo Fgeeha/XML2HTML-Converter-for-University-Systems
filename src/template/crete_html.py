@@ -1,10 +1,7 @@
 import os
 import sys
 
-from defusedxml.ElementTree import (
-    parse,
-    XMLParser,
-)
+from defusedxml.ElementTree import parse
 from jinja2 import (
     Environment,
     FileSystemLoader,
@@ -19,14 +16,10 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
         row_priority = get_list_priority(
             dir_name=dir_name_for_priority,
         )
-    parser = XMLParser(
-        forbid_dtd=True,
-        forbid_entities=True,
-        forbid_external=True,
-    )
+
     root_node = parse(
         f"{file_xml_name}.xml",
-        parser=parser,
+        forbid_dtd=True,
     ).getroot()
     enrollment = root_node.get("enrollmentCampaignTitle")
     current_date_time = str(root_node.get("currentDateTime"))
