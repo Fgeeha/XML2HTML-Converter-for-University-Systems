@@ -1,6 +1,6 @@
 ## Overview
 
-The **parse_xml_file_volgau** project is designed to parse and process XML files, primarily aimed at automating workflows or processing structured data using Python. The project includes basic logging functionality and error handling, making it robust for managing exceptions and tracking the processing status.
+The **XML2HTML-Converter-for-University-Systems** project is designed to parse and process XML files, primarily aimed at automating workflows or processing structured data using Python. The project includes basic logging functionality and error handling, making it robust for managing exceptions and tracking the processing status.
 
 ## Features
 
@@ -31,17 +31,22 @@ python3 -m venv venv
 pip install -r requirements.txt
 ```
 
-OR
+OR use [poetry](https://python-poetry.org/docs)
 
 ```bash
 poetry install
-poetry shell
 ```
 
 3. Set up environment variables by copying the template:
 
 ```bash
 cp .env.template .env
+```
+
+OR
+
+```bash
+poetry shell
 ```
 
 Configure the environment variables as necessary.
