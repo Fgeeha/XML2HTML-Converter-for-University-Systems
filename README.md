@@ -7,7 +7,7 @@ The **parse_xml_file_volgau** project is designed to parse and process XML files
 - Parses XML files efficiently
 - Basic logging and error handling
 - Modular codebase for easy extensibility
-- Well-structured for initializing and processing XML data
+- Well-structured for initializing and processing XML data and creating html files
 
 ## Prerequisites
 
