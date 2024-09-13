@@ -1,2 +1,1 @@
 [flake8]
-ignore = DUO135, E501, W503

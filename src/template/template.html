@@ -25,77 +25,100 @@
             </small>
           </h1>
           <hr />
+          <!-- Field for search -->
+          <div class="mb-3">
+            <label for="snilsInput" class="form-label"
+              >Введите СНИЛС или номер абитуриента:</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="snilsInput"
+              placeholder="СНИЛС или номер"
+            />
+          </div>
+          <button class="btn btn-primary" onclick="searchStudent()">
+            Найти абитуриента
+          </button>
+
+          <hr />
+          <div id="result"></div>
           {% for info_id in range(information|length) %}
-          <h5>{{ information[info_id].faculty[0] }}</h5>
-          {% if pk_name == 'spo' %}
-          <h2>{{ information[info_id].edu_program_subject[0] }}</h2>
-          {% else %}
-          <h2>
-            {{ information[info_id].edu_program_subject[0] }} ({{
-            information[info_id].program_spec[0] }})
-          </h2>
-          {% endif %}
-          <h3>
-            {{ information[info_id].edu_program_form[0] }} форма обучения, {{
-            information[info_id].compensation_type_short_title[0] }} {{
-            information[info_id].competition_type[0] }}
-          </h3>
-          <p>
-            Заявлений — {{ information[info_id].statement[0] }}, число мест — {{
-            information[info_id].plan_recruitment[0] }}
-          </p>
-          {% if information[info_id].statement[0] > 0 %}
-          <div class="table-responsive">
-            <table class="table table-bordered table-striped table-hover">
-              <thead>
-                <tr>
-                  <th rowspan="2">№</th>
-                  <th rowspan="2">СНИЛС или Личный номер</th>
-                  <th rowspan="2">Сумма баллов</th>
-                  {% if pk_name in ("bak", "mag") %}
-                  <th colspan="{{ information[info_id].colspan[0] }}">
-                    Результаты ВИ
-                  </th>
-                  <th rowspan="2">Сумма баллов за ИД</th>
-                  <th rowspan="2">Основание приема без ВИ</th>
-                  <th rowspan="2">Преимущественное право зачисления</th>
-                  <th rowspan="2">Сдан оригинал (отметка на ЕПГУ)</th>
-                  <th rowspan="2">
-                    Договор на оказание платных образовательных услуг
-                  </th>
-                  <th rowspan="2">Приоритет</th>
-                  <th rowspan="2">Высший приоритет</th>
-                  {% elif pk_name in ("spo", "asp") %}
-                  <th rowspan="2">Преимущественное право</th>
-                  {% if pk_name == "spo" and
-                  information[info_id].short_title[0]|length == 0 %} {% else %}
-                  <th colspan="{{ information[info_id].colspan[0] }}">
-                    Результаты ВИ
-                  </th>
+          <div class="competition-block" id="competition-{{ info_id }}">
+            <h5>{{ information[info_id].faculty[0] }}</h5>
+            {% if pk_name == 'spo' %}
+            <h2>{{ information[info_id].edu_program_subject[0] }}</h2>
+            {% else %}
+            <h2>
+              {{ information[info_id].edu_program_subject[0] }} ({{
+              information[info_id].program_spec[0] }})
+            </h2>
+            {% endif %}
+            <h3>
+              {{ information[info_id].edu_program_form[0] }} форма обучения, {{
+              information[info_id].compensation_type_short_title[0] }} {{
+              information[info_id].competition_type[0] }}
+            </h3>
+            <p>
+              Заявлений — {{ information[info_id].statement[0] }}, число мест —
+              {{ information[info_id].plan_recruitment[0] }}
+            </p>
+            {% if information[info_id].statement[0] > 0 %}
+            <div class="table-responsive">
+              <table
+                class="table table-bordered table-striped table-hover"
+                id="table-{{ info_id }}"
+              >
+                <thead>
+                  <tr>
+                    <th rowspan="2">№</th>
+                    <th rowspan="2">СНИЛС или Личный номер</th>
+                    <th rowspan="2">Сумма баллов</th>
+                    {% if pk_name in ("bak", "mag") %}
+                    <th colspan="{{ information[info_id].colspan[0] }}">
+                      Результаты ВИ
+                    </th>
+                    <th rowspan="2">Сумма баллов за ИД</th>
+                    <th rowspan="2">Основание приема без ВИ</th>
+                    <th rowspan="2">Преимущественное право зачисления</th>
+                    <th rowspan="2">Сдан оригинал (отметка на ЕПГУ)</th>
+                    <th rowspan="2">
+                      Договор на оказание платных образовательных услуг
+                    </th>
+                    <th rowspan="2">Приоритет</th>
+                    <th rowspan="2">Высший приоритет</th>
+                    {% elif pk_name in ("spo", "asp") %}
+                    <th rowspan="2">Преимущественное право</th>
+                    {% if pk_name == "spo" and
+                    information[info_id].short_title[0]|length == 0 %} {% else
+                    %}
+                    <th colspan="{{ information[info_id].colspan[0] }}">
+                      Результаты ВИ
+                    </th>
+                    {% endif %}
+                    <th rowspan="2">Сумма баллов за ИД</th>
+                    <th rowspan="2">Сдан оригинал</th>
+                    {% if pk_name == "asp" %}
+                    <th rowspan="2">Согласие на зачисление</th>
+                    {% endif %}
+                    <th rowspan="2">Статус</th>
+                    <th rowspan="2">Примечание</th>
+                    <th rowspan="2">Информация о зачислении</th>
+                    {% endif %}
+                  </tr>
+                  {% if information[info_id].short_title[0]|length > 0 %}
+                  <tr>
+                    <th>{{ information[info_id].short_title[0][0] }}</th>
+                    {% if information[info_id].short_title[0]|length > 1 %}
+                    <th>{{ information[info_id].short_title[0][1] }}</th>
+                    {% if information[info_id].short_title[0]|length > 2 %}
+                    <th>{{ information[info_id].short_title[0][2] }}</th>
+                    {% endif %} {% endif %}
+                  </tr>
                   {% endif %}
-                  <th rowspan="2">Сумма баллов за ИД</th>
-                  <th rowspan="2">Сдан оригинал</th>
-                  {% if pk_name == "asp" %}
-                  <th rowspan="2">Согласие на зачисление</th>
-                  {% endif %}
-                  <th rowspan="2">Статус</th>
-                  <th rowspan="2">Примечание</th>
-                  <th rowspan="2">Информация о зачислении</th>
-                  {% endif %}
-                </tr>
-                {% if information[info_id].short_title[0]|length > 0 %}
-                <tr>
-                  <th>{{ information[info_id].short_title[0][0] }}</th>
-                  {% if information[info_id].short_title[0]|length > 1 %}
-                  <th>{{ information[info_id].short_title[0][1] }}</th>
-                  {% if information[info_id].short_title[0]|length > 2 %}
-                  <th>{{ information[info_id].short_title[0][2] }}</th>
-                  {% endif %} {% endif %}
-                </tr>
-                {% endif %}
-              </thead>
-              <!-- prettier-ignore -->
-              <tbody>
+                </thead>
+                <!-- prettier-ignore -->
+                <tbody>
                 {% for student_id in range(students[info_id].number|length) %}
                 {% set student = students[info_id] %} {% if pk_name in ("bak",
                 "mag") and student.original_passed[student_id] == 'Да' and
@@ -144,14 +167,60 @@
                 </tr>
                 {% endfor %}
               </tbody>
-              <!-- код, который не будет отформатирован Prettier -->
-            </table>
+                <!-- код, который не будет отформатирован Prettier -->
+              </table>
+            </div>
+            {% endif %} {% if information[info_id].faculty %}
+            <hr />
+            {% endif %}
           </div>
-          {% endif %} {% if information[info_id].faculty %}
-          <hr />
-          {% endif %} {% endfor %}
+          {% endfor %}
         </div>
       </div>
     </div>
+    <!-- JavaScript for search functionality -->
+    <script>
+      function searchStudent() {
+        const input = document.getElementById("snilsInput").value.trim();
+        const competitions = document.querySelectorAll(".competition-block");
+        let foundAny = false;
+
+        competitions.forEach((competition) => {
+          const table = competition.querySelector("table");
+          const rows = table ? table.getElementsByTagName("tr") : [];
+          let foundInCompetition = false;
+
+          for (let i = 1; i < rows.length; i++) {
+            const cells = rows[i].getElementsByTagName("td");
+
+            if (cells.length > 1 && cells[1]) {
+              const snilsOrNumber = cells[1].innerText.trim();
+
+              if (snilsOrNumber === input) {
+                foundInCompetition = true;
+                rows[i].style.backgroundColor = "yellow"; // Highlight matching row
+              } else {
+                rows[i].style.backgroundColor = ""; // Reset non-matching rows
+              }
+            }
+          }
+
+          // If not found in this competition, hide the competition block
+          if (foundInCompetition) {
+            competition.style.display = "block";
+            foundAny = true;
+          } else {
+            competition.style.display = "none";
+          }
+        });
+
+        if (foundAny) {
+          document.getElementById("result").innerHTML =
+            "Абитуриент найден в одном или нескольких конкурсах!";
+        } else {
+          document.getElementById("result").innerHTML = "Абитуриент не найден.";
+        }
+      }
+    </script>
   </body>
 </html>
