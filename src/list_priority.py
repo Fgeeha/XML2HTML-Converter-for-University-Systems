@@ -13,14 +13,14 @@ def get_list_priority(dir_name: str) -> list[(str, str, str, bool, bool)]:
             forbid_dtd=True,
         ).getroot()
         is_budget = (
-            True if root_node.get("isBudget") == "true" else False
+            root_node.get("isBudget") == "true"
         )  # Если бюджет True, если платное False.
         is_agree = (
-            True if root_node.get("isAgree") == "true" else False
+            root_node.get("isAgree") == "true"
         )  # Если по согласию (поданные оригиналы) True, если поданным конкурсам False.
 
         is_priority_step = (
-            True if root_node.get("isPriorityStep") == "true" else False
+            root_node.get("isPriorityStep") == "true"
         )  # Если приоритетный этап True, иначе False Закомитить после приоритетного этапа
 
         for row in root_node:
