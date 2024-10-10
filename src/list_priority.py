@@ -12,10 +12,16 @@ def get_list_priority(dir_name: str) -> list[(str, str, str, bool, bool)]:
             path_file,
             forbid_dtd=True,
         ).getroot()
-        is_budget = root_node.get("isBudget") == "true"  # Если бюджет True, если платное False.
-        is_agree = root_node.get("isAgree") == "true"  # Если по согласию (поданные оригиналы) True, если поданным конкурсам False.
+        is_budget = (
+            root_node.get("isBudget") == "true"
+        )  # Если бюджет True, если платное False.
+        is_agree = (
+            root_node.get("isAgree") == "true"
+        )  # Если по согласию (поданные оригиналы) True, если поданным конкурсам False.
 
-        is_priority_step = root_node.get("isPriorityStep") == "true"  # Если приоритетный этап True, иначе False Закомитить после приоритетного этапа
+        is_priority_step = (
+            root_node.get("isPriorityStep") == "true"
+        )  # Если приоритетный этап True, иначе False Закомитить после приоритетного этапа
 
         for row in root_node:
             l_row_entrant_req_com_id_and_ent_id_and_com_id = []
