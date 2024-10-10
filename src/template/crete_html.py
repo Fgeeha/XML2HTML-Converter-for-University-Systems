@@ -53,7 +53,6 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                                     l_snils_in_another_competition.append(snils)
     for competition in root_node:
         for row_program in competition:
-
             # Инициируем переменных
             s_compensation_type_short_title = ""
             average_edu_institution_mark = ""
@@ -170,7 +169,6 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                                 or s_competition_type_title == "Отдельная квота"
                                 or snils in l_snils_in_another_competition
                             ):
-
                                 for PersonalNumber in sub2_row_program.findall(
                                     "entrantPersonalNumber",
                                 ):
