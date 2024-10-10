@@ -79,7 +79,7 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                     s_competition_type = ""
                 else:
                     s = str(competition_type)
-                    if pk_name == "bak" or pk_name == "mag":
+                    if pk_name in ("bak", "mag"):
                         s_competition_type = (
                             " - "
                             + s[0].lower()
