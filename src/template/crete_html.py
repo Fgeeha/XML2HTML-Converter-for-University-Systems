@@ -352,10 +352,13 @@ def create_html(
                     ),  # Сумма баллов
                     "marks": l_marks,  # Результаты ВИ
                     "total_points_id": l_total_points_id,  # Сумма баллов за ИД
-                    "preference_category_title": l_preference_category_title,  # Преимущественное право зачисления
-                    "original_passed": l_original_passed,  # Сдан оригинал (отметка на ЕПГУ)
+                    # Преимущественное право зачисления
+                    "preference_category_title": l_preference_category_title,
+                    # Сдан оригинал (отметка на ЕПГУ)
+                    "original_passed": l_original_passed,
                     "print_priority": l_print_priority,  # Приоритет
-                    "vip_priority": l_vip_priority,  # Высший приоритет (Да/' ')
+                    # Высший приоритет (Да/' ')
+                    "vip_priority": l_vip_priority,
                     "accepted": l_l_accepted,  # Согласие на зачисление
                     "status": l_status,  # Статус
                 }
