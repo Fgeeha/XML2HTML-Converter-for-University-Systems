@@ -10,7 +10,11 @@ from jinja2 import (
 from src.list_priority import get_list_priority
 
 
-def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) -> None:
+def create_html(
+    pk_name: str,
+    file_xml_name: str,
+    dir_name_for_priority: str,
+) -> None:
     row_priority = []  # Создаем список записей в которых есть высший приоритет
     if pk_name in ("bak", "mag"):
         row_priority = get_list_priority(
@@ -47,10 +51,12 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                     for sub2_row_program in sub_row_program:
                         position = sub2_row_program.get("position")
                         snils = sub2_row_program.get("snils")
-                        if position is not None:
-                            if s_competition_type_title == "Отдельная квота":
-                                if snils not in l_snils_in_another_competition:
-                                    l_snils_in_another_competition.append(snils)
+                        if (
+                            position is not None
+                            and s_competition_type_title == "Отдельная квота"
+                            and snils not in l_snils_in_another_competition
+                        ):
+                            l_snils_in_another_competition.append(snils)
     for competition in root_node:
         for row_program in competition:
             # Инициируем переменных
@@ -79,7 +85,7 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                     s_competition_type = ""
                 else:
                     s = str(competition_type)
-                    if pk_name == "bak" or pk_name == "mag":
+                    if pk_name in ("bak", "mag"):
                         s_competition_type = (
                             " - "
                             + s[0].lower()
@@ -236,9 +242,8 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
                                 "marks",
                             )  # Результаты сдачи вступительных испытаний (по 3 сразу)
                             if marks is not None:
-                                if pk_name == "spo":
-                                    if marks == "":
-                                        marks = "—"
+                                if pk_name == "spo" and marks == "":
+                                    marks = "—"
                                 s = marks.split()
                                 l_marks.append(s)
                             if pk_name == "asp":
@@ -359,9 +364,10 @@ def create_html(pk_name: str, file_xml_name: str, dir_name_for_priority: str) ->
 
     # Настройка Jinja2
     # Определяем путь к директории с шаблонами
-    if hasattr(sys, "_MEIPASS"):
+    meipass = getattr(sys, "_MEIPASS", None)
+    if meipass:
         # Путь для PyInstaller
-        template_dir = os.path.join(sys._MEIPASS, "template")
+        template_dir = os.path.join(meipass, "template")
     else:
         # Путь для разработки
         template_dir = "src/template/"

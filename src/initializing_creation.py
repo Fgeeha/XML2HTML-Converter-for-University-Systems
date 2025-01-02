@@ -69,9 +69,10 @@ def main():
                 except OSError as e:
                     print(f"Error: {e.filename} - {e.strerror}.")
 
-            with gzip.open(f"{name_pk[pk_title]}.xml.zip", "rb") as f_in:
-                with open(f"{name_pk[pk_title]}.xml", "wb") as f_out:
-                    shutil.copyfileobj(f_in, f_out)
+            with gzip.open(f"{name_pk[pk_title]}.xml.zip", "rb") as f_in, open(
+                f"{name_pk[pk_title]}.xml", "wb"
+            ) as f_out:
+                shutil.copyfileobj(f_in, f_out)
 
             create_html(
                 pk_name=pk_title,
@@ -90,9 +91,8 @@ def main():
                     f"dump/{dt_now}/{name_pk[pk_title]}.xml.zip",
                 )
 
-    if not debug_mode:
-        if os.path.exists(dir_name_file_priority):
-            shutil.rmtree(dir_name_file_priority)
+    if not debug_mode and os.path.exists(dir_name_file_priority):
+        shutil.rmtree(dir_name_file_priority)
 
 
 if __name__ == "__main__":
