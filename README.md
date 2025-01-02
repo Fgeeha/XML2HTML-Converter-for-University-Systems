@@ -102,7 +102,7 @@ There are two types of tags in Git: lightweight and annotated. It is recommended
 
 Creating an annotated tag:
 ```bash
-git tag -a v1.2.3 -m "Release version 1.2.3"
+git tag -a v1.2.3 -m "Release version 2.0.3"
 ```
 - `-a` — indicates that the tag is annotated.
 - `v2.0.3` — the tag name corresponding to the  `v*.*.*` template.
