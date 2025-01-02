@@ -15,6 +15,7 @@ __pycache__/
 *.zip
 *.spec
 *.pyc
+*.log
 
 !template.html
 .env
