@@ -96,6 +96,44 @@ parse_xml_file_volgau/
 
 Feel free to contribute to the project by submitting pull requests or opening issues. Ensure that your code follows the repository's existing style and structure.
 
+### Git push tag
+#### Create a tag in the `v*.*.*` format
+There are two types of tags in Git: lightweight and annotated. It is recommended to use annotated tags, as they contain additional information such as the author, date, and message.
+
+Creating an annotated tag:
+```bash
+git tag -a v1.2.3 -m "Release version 1.2.3"
+```
+- `-a` — indicates that the tag is annotated.
+- `v2.0.3` — the tag name corresponding to the  `v*.*.*` template.
+- `-m "Release version 2.0.3"` — the message for the tag.
+
+#### Push the tag to the remote repository
+Push a **specific tag**:
+
+To trigger only one **specific tag**:
+
+```bash
+git push origin v2.0.3
+```
+**Push all tags**:
+
+If you want to push all the local tags that don't exist in the remote repository yet:
+```bash
+git push origin --tags
+```
+
+#### Deleting a tag: 
+If you created the wrong tag by mistake, you can delete it locally and in a remote repository.:
+```bash
+# Delete a local tag
+git tag -d v2.0.3
+
+# Remove tag from remote repository
+git push origin --delete v2.0.3
+```
+
+
 ## License
 
 This project is licensed under the MIT License.
