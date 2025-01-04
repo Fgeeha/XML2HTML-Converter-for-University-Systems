@@ -13,6 +13,13 @@ repos:
       - id: add-trailing-comma
         args: [--py36-plus]
 
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.6
+    hooks:
+      - id: actionlint
+        language: system
+        types: [ yaml ]
+
   - repo: https://github.com/myint/autoflake
     rev: v2.3.1
     hooks:
