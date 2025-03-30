@@ -1,7 +1,16 @@
+
+ifeq ($(OS),Windows_NT)
+    # Windows
+    PY_NAME := py
+else
+    # Linux, macOS
+    PY_NAME := python3
+endif
+
 .PHONY: app freeze build
 
 app:
-	poetry run main.py
+	poetry run $(PY_NAME) main.py
 
 freeze:
 	pip freeze > requirements.txt
