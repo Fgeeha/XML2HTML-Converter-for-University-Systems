@@ -39,24 +39,8 @@ def create_html(
         "current_date_time": current_date_time,
     }
 
-    l_snils_in_another_competition = []
-    if pk_name in ("bak", "mag"):
-        for competition in root_node:
-            for row_program in competition:
-                s_competition_type_title = ""
-                competition_type = row_program.get("competitionType")
-                if competition_type is not None:
-                    s_competition_type_title = str(competition_type)
-                for sub_row_program in row_program:
-                    for sub2_row_program in sub_row_program:
-                        position = sub2_row_program.get("position")
-                        snils = sub2_row_program.get("snils")
-                        if (
-                            position is not None
-                            and s_competition_type_title == "Отдельная квота"
-                            and snils not in l_snils_in_another_competition
-                        ):
-                            l_snils_in_another_competition.append(snils)
+    l_snils_in_another_competition = parse_root_node(root_node, pk_name, row_priority)
+
     for competition in root_node:
         for row_program in competition:
             # Инициируем переменных
@@ -64,7 +48,6 @@ def create_html(
             average_edu_institution_mark = ""
             s_competition_type = ""
             s_competition_type_title = ""
-            edu_program_subject = ""
             edu_program_id = ""
             faculty = row_program.get("formativeOrgUnitTitle")
             if pk_name == "spo":
@@ -384,3 +367,84 @@ def create_html(
     # Запись результата в файл
     with open(f"spiski_abitur_{pk_name}_2024.html", "w", encoding="utf-8") as file_html:
         file_html.write(html_content)
+
+
+def parse_root_node(root_node, pk_name, row_priority):
+    l_snils_in_another_competition = []
+    if pk_name in ("bak", "mag"):
+        for competition in root_node:
+            for row_program in competition:
+                s_competition_type_title = ""
+                competition_type = row_program.get("competitionType")
+                if competition_type is not None:
+                    s_competition_type_title = str(competition_type)
+                for sub_row_program in row_program:
+                    for sub2_row_program in sub_row_program:
+                        position = sub2_row_program.get("position")
+                        snils = sub2_row_program.get("snils")
+                        if (
+                            position is not None
+                            and s_competition_type_title == "Отдельная квота"
+                            and snils not in l_snils_in_another_competition
+                        ):
+                            l_snils_in_another_competition.append(snils)
+    return l_snils_in_another_competition
+
+
+def process_competition_data(
+    competition,
+    pk_name,
+    row_priority,
+    l_snils_in_another_competition,
+):
+    # Инициируем переменных
+    s_compensation_type_short_title = ""
+    s_competition_type = ""
+    edu_program_subject = ""
+    edu_program_id = ""
+    faculty = competition.get("formativeOrgUnitTitle")
+    if pk_name == "spo":
+        edu_program_subject = competition.get("programSetPrintTitle")
+    else:
+        edu_program_subject = competition.get("eduProgramSubject")
+        edu_program_id = competition.get("id")
+    edu_program_form = competition.get("eduProgramForm")
+    compensation_type_short_title = competition.get(
+        "compensationTypeShortTitle",
+    )
+    if compensation_type_short_title is not None:
+        s_compensation_type_short_title = str(compensation_type_short_title)
+    competition_type = competition.get("competitionType")
+    if competition_type is not None:
+        str(competition_type)
+        if s_compensation_type_short_title == "по договору":
+            s_competition_type = ""
+        else:
+            s = str(competition_type)
+            if pk_name in ("bak", "mag"):
+                s_competition_type = (
+                    " - " + s[0].lower() + s[1:] + "<br> <H4>Зачисление на бюджет - в "
+                    "соответствии с высшим приоритетом, "
+                    "по которому поступающий проходит по "
+                    "конкурсу</H4>"
+                )
+            else:
+                s_competition_type = f" - {s[0].lower() + s[1:]}"
+    plan_recruitment = competition.get("plan")
+    if plan_recruitment is not None:
+        if s_compensation_type_short_title == "по договору":
+            plan_recruitment = str(plan_recruitment)
+        else:
+            if pk_name == "spo":
+                plan_recruitment = str(plan_recruitment)
+            else:
+                plan_recruitment = str(plan_recruitment) + " за исключением квот"
+    return {
+        "faculty": faculty,
+        "edu_program_subject": edu_program_subject,
+        "edu_program_id": edu_program_id,
+        "edu_program_form": edu_program_form,
+        "s_compensation_type_short_title": s_compensation_type_short_title,
+        "s_competition_type": s_competition_type,
+        "plan_recruitment": plan_recruitment,
+    }
