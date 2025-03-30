@@ -2,6 +2,8 @@ name: Build and Deploy EXE
 
 on:
   push:
+    branches:
+      - main
     tags:
       - "v*.*.*"
 
@@ -14,9 +16,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5.3.0
         with:
           python-version: "3.12"
+
 
       # Cache Poetry dependencies
       - name: Cache Poetry dependencies
@@ -64,6 +67,7 @@ jobs:
           release_name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
+
 
       - name: Upload EXE to Release
         uses: actions/upload-release-asset@v1
