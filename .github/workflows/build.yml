@@ -45,7 +45,7 @@ jobs:
       - name: Update Poetry lock file
         shell: pwsh
         run: |
-          poetry lock --no-update
+          poetry lock
 
       - name: Install dependencies
         shell: pwsh
