@@ -9,7 +9,8 @@ from jinja2 import (
     FileSystemLoader,
 )
 
-from src.list_priority import get_list_priority
+from src.list_priority import get_priority_list
+from src.core.config import settings
 
 
 @dataclass
@@ -55,8 +56,8 @@ def create_html(
     # Получаем список приоритетов, если требуется
     row_priority = []
     if pk_name in ("bak", "mag"):
-        row_priority = get_list_priority(
-            dir_name=dir_name_for_priority,
+        row_priority = get_priority_list(
+            directory=dir_name_for_priority,
         )
 
     # Парсим XML-файл
@@ -81,7 +82,9 @@ def create_html(
     # Обрабатываем каждую образовательную программу
     for competition in root_node:
         for row_program in competition:
-            info, students = process_program(row_program, pk_name, row_priority, l_snils_in_another_competition)
+            info, students = process_program(
+                row_program, pk_name, row_priority, l_snils_in_another_competition
+            )
             if info and students:
                 main_list["information"].append(info)
                 main_list["students"].append(students)
@@ -125,10 +128,7 @@ def process_program(row_program, pk_name, row_priority, l_snils_in_another_compe
             s = str(competition_type)
             if pk_name in ("bak", "mag"):
                 s_competition_type = (
-                    " - "
-                    + s[0].lower()
-                    + s[1:]
-                    + "<br> <H4>Зачисление на бюджет - в "
+                    " - " + s[0].lower() + s[1:] + "<br> <H4>Зачисление на бюджет - в "
                     "соответствии с высшим приоритетом, "
                     "по которому поступающий проходит по "
                     "конкурсу</H4>"
@@ -143,9 +143,7 @@ def process_program(row_program, pk_name, row_priority, l_snils_in_another_compe
             if pk_name == "spo":
                 plan_recruitment = str(plan_recruitment)
             else:
-                plan_recruitment = (
-                    str(plan_recruitment) + " за исключением квот"
-                )
+                plan_recruitment = str(plan_recruitment) + " за исключением квот"
     # Инициируем начальные данные по каждому абитуриенту в каждой образовательной программе
     l_row_entrant_req_com_id_and_ent_id_and_com_id = []  # массив для проверки
     statement = 0  # Количество заявлений
@@ -208,31 +206,25 @@ def process_program(row_program, pk_name, row_priority, l_snils_in_another_compe
                     "entrantId",
                 )  # Снилс ИЛИ Номер
                 if position is not None:
-                    #if (
-                    #    snils is None
-                    #    or s_competition_type_title == "Отдельная квота"
-                    #    or snils in l_snils_in_another_competition
-                    #):
-                    #    for PersonalNumber in sub2_row_program.findall(
-                    #        "entrantPersonalNumber",
-                    #    ):
-                    #        number = PersonalNumber.text
-                    #        statement += 1
-                    #       l_snils.append(number)
-                    #else:
-                    #    statement += 1
-                    #    l_snils.append(snils)
-                        
-                    for PersonalNumber in sub2_row_program.findall(
+                    if (
+                        snils is None
+                        or s_competition_type_title == "Отдельная квота"
+                        or snils in l_snils_in_another_competition
+                        or not settings.app.use_snils
+                    ):
+                        for PersonalNumber in sub2_row_program.findall(
                             "entrantPersonalNumber",
                         ):
                             number = PersonalNumber.text
                             statement += 1
-                    l_snils.append(number)
+                            l_snils.append(number)
+                    else:
+                        statement += 1
+                        l_snils.append(snils)
+
                     l_entrant_id.append(entrant_id)
                     if sub2_row_program.get("acceptedEntrant") is not None and (
-                        sub2_row_program.get("snils") is not None
-                        or number is not None
+                        sub2_row_program.get("snils") is not None or number is not None
                     ):
                         l_accepted = sub2_row_program.get(
                             "acceptedEntrant",
@@ -338,14 +330,10 @@ def process_program(row_program, pk_name, row_priority, l_snils_in_another_compe
                         for list_row_priority in row_priority:
                             if (
                                 entrant_id == list_row_priority[0]
-                                and req_comp_id_highest_priority
-                                == list_row_priority[1]
+                                and req_comp_id_highest_priority == list_row_priority[1]
                                 and edu_program_id == list_row_priority[2]
                             ):
-                                if (
-                                    list_row_priority[3]
-                                    and not list_row_priority[4]
-                                ):
+                                if list_row_priority[3] and not list_row_priority[4]:
                                     vip_priority = "Да"
                                 else:
                                     vip_priority = ""

@@ -11,25 +11,28 @@ class AppConfig(BaseModel):
     False - transferring files to a folder dump
     True - zip archives remain in the root folder
     """
-    file_name_enr_recommended_bak: str = (
-        "enr_recommended_enrollment_list_1780165749254516989.zip"
-    )
-    file_name_enr_recommended_mag: str = (
-        "enr_recommended_enrollment_list_1780165823923613949.zip"
-    )
     dir_name_file_priority: str = "file_priority"
     data_time_format: str = "%d%m%Y %H-%M-%S"
-    name_pk: dict = {
-        "bak": "enr_rating_1780165749254516989",
-        "mag": "enr_rating_1780165823923613949",
-        "spo": "enr_rating_1790248022834278653",
-        "asp": "enr_rating_1780891192879345917",
-    }
+    use_snils: bool = False
     pk_id: dict = {
-        "bak": 1780165749254516989,
-        "mag": 1780165823923613949,
-        "spo": 1790248022834278653,
-        "asp": 1780891192879345917,
+        "bak": 1812524082527334653,
+        "mag": 1812595423435682045,
+        "spo": 1812599375173644541,
+        "asp": 1812594156837662973,
+    }
+
+    file_name_enr_recommended_bak: str = (
+        f"enr_recommended_enrollment_list_{pk_id['bak']}.zip"
+    )
+    file_name_enr_recommended_mag: str = (
+        f"enr_recommended_enrollment_list_{pk_id['mag']}.zip"
+    )
+
+    name_pk: dict = {
+        "bak": f"enr_rating_{pk_id['bak']}",
+        "mag": f"enr_rating_{pk_id['mag']}",
+        "spo": f"enr_rating_{pk_id['spo']}",
+        "asp": f"enr_rating_{pk_id['asp']}",
     }
 
 
