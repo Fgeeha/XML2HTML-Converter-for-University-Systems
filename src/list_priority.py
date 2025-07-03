@@ -1,61 +1,54 @@
 import os
+from typing import (
+    List,
+    Tuple,
+)
 
-from defusedxml.ElementTree import parse
+from defusedxml.ElementTree import (
+    parse,
+    XMLParser,
+)
 
 
-def parse_file_for_priority(path_file: str) -> list:
-    root_node = parse(
-        path_file,
+def get_list_priority(dir_name: str) -> List[Tuple[str, str, str, bool, bool, bool]]:
+    """
+    Parse XML files in the given directory and return a list of tuples containing:
+    (entrant_id, req_com_id, competition_id, is_budget, is_agree, is_priority_step).
+    """
+    priorities: List[Tuple[str, str, str, bool, bool, bool]] = []
+    parser = XMLParser(
         forbid_dtd=True,
-    ).getroot()
-    is_budget = (
-        root_node.get("isBudget") == "true"
-    )  # Если бюджет True, если платное False.
-    is_agree = (
-        root_node.get("isAgree") == "true"
-    )  # Если по согласию (поданные оригиналы) True, если поданным конкурсам False.
+        forbid_entities=True,
+        forbid_external=True,
+    )
 
-    is_priority_step = (
-        root_node.get("isPriorityStep") == "true"
-    )  # Если приоритетный этап True, иначе False Закомитить после приоритетного этапа
+    for filename in os.listdir(dir_name):
+        file_path = os.path.join(dir_name, filename)
+        try:
+            root = parse(file_path, parser=parser).getroot()
+        except Exception:
+            continue
 
-    l_row_entrant_priority = []
-    for row in root_node:
-        l_row_entrant_req_com_id_and_ent_id_and_com_id = []
-        row_entrant_req_com_id = str(row.get("reqComId"))
-        if row_entrant_req_com_id != "None":
-            row_entrant_entrant_id = str(row.get("entrantId"))
-            row_entrant_competition_id = str(row.get("competitionId"))
-            l_row_entrant_req_com_id_and_ent_id_and_com_id.append(
-                (
-                    row_entrant_entrant_id,
-                    row_entrant_req_com_id,
-                    row_entrant_competition_id,
-                ),
+        is_budget = root.get("isBudget") == "true"
+        is_agree = root.get("isAgree") == "true"
+        is_priority_step = root.get("isPriorityStep") == "true"
+
+        for element in root:
+            req_com_id = element.get("reqComId")
+            if not req_com_id or req_com_id == "None":
+                continue
+
+            entrant_id = element.get("entrantId", "")
+            competition_id = element.get("competitionId", "")
+            entry = (
+                entrant_id,
+                req_com_id,
+                competition_id,
+                is_budget,
+                is_agree,
+                is_priority_step,
             )
-            if (
-                l_row_entrant_req_com_id_and_ent_id_and_com_id[0]
-                in l_row_entrant_priority
-            ):
-                ...
-            else:
-                l_row_entrant_priority.append(
-                    (
-                        row_entrant_entrant_id,
-                        row_entrant_req_com_id,
-                        row_entrant_competition_id,
-                        is_budget,
-                        is_agree,
-                        is_priority_step,
-                    ),
-                )
-    return l_row_entrant_priority
+            if entry not in priorities:
+                priorities.append(entry)
 
-
-def get_list_priority(dir_name: str) -> list[(str, str, str, bool, bool)]:
-    l_row_entrant_priority = []
-    l_file = os.listdir(dir_name)
-    for f in l_file:
-        path_file = f"{dir_name}/{f}"
-        l_row_entrant_priority.extend(parse_file_for_priority(path_file))
-    return l_row_entrant_priority
+    return priorities
