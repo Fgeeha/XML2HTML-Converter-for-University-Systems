@@ -13,7 +13,7 @@ from jinja2 import (
 )
 
 from src.core.config import settings
-from src.list_priority import get_priority_list
+from src.list_priority import get_list_priority
 
 
 @dataclass
@@ -59,7 +59,7 @@ def create_html(
     # Получаем список приоритетов, если требуется
     row_priority = []
     if pk_name in ("bak", "mag"):
-        row_priority = get_priority_list(
+        row_priority = get_list_priority(
             directory=dir_name_for_priority,
         )
 
@@ -182,9 +182,7 @@ def process_program(row_program, pk_name, row_priority, l_snils_in_another_compe
                 l_short_title.append(short_title)
             position = sub2_row_program.get("position")  # Номер по порядку
             if position is not None:
-                [
-                    l_number.append(int(x)) for x in position.split()
-                ]  # Приоритет при поступлении
+                [l_number.append(int(x)) for x in position.split()]
                 preference_category_title = sub2_row_program.get(
                     "preferenceCategoryTitle",
                 )
@@ -491,7 +489,10 @@ def parse_xml_file(file_path: str):
 
 def render_html(template_path: str, context: dict, output_path: str):
     """Генерирует HTML-файл из шаблона Jinja2."""
-    env = Environment(loader=FileSystemLoader(template_path))
+    env = Environment(
+        loader=FileSystemLoader(template_path),
+        autoescape=True,
+    )
     template = env.get_template("template.html")
     html_content = template.render(context)
     with open(output_path, "w", encoding="utf-8") as f:

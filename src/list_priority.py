@@ -10,7 +10,7 @@ from defusedxml.ElementTree import (
 )
 
 
-def get_list_priority(dir_name: str) -> List[Tuple[str, str, str, bool, bool, bool]]:
+def get_list_priority(directory: str) -> List[Tuple[str, str, str, bool, bool, bool]]:
     """
     Parse XML files in the given directory and return a list of tuples containing:
     (entrant_id, req_com_id, competition_id, is_budget, is_agree, is_priority_step).
@@ -22,8 +22,8 @@ def get_list_priority(dir_name: str) -> List[Tuple[str, str, str, bool, bool, bo
         forbid_external=True,
     )
 
-    for filename in os.listdir(dir_name):
-        file_path = os.path.join(dir_name, filename)
+    for filename in os.listdir(directory):
+        file_path = os.path.join(directory, filename)
         try:
             root = parse(file_path, parser=parser).getroot()
         except Exception:
