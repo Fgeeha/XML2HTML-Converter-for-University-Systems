@@ -210,7 +210,7 @@ def process_program(row_program, pk_name, row_priority, l_snils_in_another_compe
                         snils is None
                         or s_competition_type_title == "Отдельная квота"
                         or snils in l_snils_in_another_competition
-                        or not settings.app.use_snils
+                        or not settings.app.use_snils[pk_name]
                     ):
                         for PersonalNumber in sub2_row_program.findall(
                             "entrantPersonalNumber",
@@ -228,7 +228,7 @@ def process_program(row_program, pk_name, row_priority, l_snils_in_another_compe
                     ):
                         l_accepted = sub2_row_program.get(
                             "acceptedEntrant",
-                        )  # Согласие на зачисление
+                        )
 
                         if l_accepted == "true":
                             l_l_accepted.append("Да")

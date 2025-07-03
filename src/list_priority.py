@@ -1,45 +1,47 @@
 import os
+from defusedxml.ElementTree import parse, XMLParser
 from typing import List, Tuple
-from defusedxml.ElementTree import parse, ParseError
 
 
-def get_priority_list(directory: str) -> List[Tuple[str, str, str, bool, bool]]:
+def get_list_priority(dir_name: str) -> List[Tuple[str, str, str, bool, bool, bool]]:
     """
-    Parse all XML files in the given directory and extract entries with priority info.
-
-    Returns a list of tuples:
-      (entrant_id, request_competition_id, competition_id, is_budget, is_agree)
+    Parse XML files in the given directory and return a list of tuples containing:
+    (entrant_id, req_com_id, competition_id, is_budget, is_agree, is_priority_step).
     """
-    priority_entries: List[Tuple[str, str, str, bool, bool]] = []
+    priorities: List[Tuple[str, str, str, bool, bool, bool]] = []
+    parser = XMLParser(
+        forbid_dtd=True,
+        forbid_entities=True,
+        forbid_external=True,
+    )
 
-    for filename in os.listdir(directory):
-        filepath = os.path.join(directory, filename)
+    for filename in os.listdir(dir_name):
+        file_path = os.path.join(dir_name, filename)
         try:
-            tree = parse(filepath)
-            root = tree.getroot()
-        except (ParseError, FileNotFoundError) as e:
+            root = parse(file_path, parser=parser).getroot()
+        except Exception:
             continue
 
-        is_budget = root.get("isBudget", "false").lower() == "true"
-        is_agree = root.get("isAgree", "false").lower() == "true"
+        is_budget = root.get("isBudget") == "true"
+        is_agree = root.get("isAgree") == "true"
+        is_priority_step = root.get("isPriorityStep") == "true"
 
-        for child in root:
-            req_com_id = child.get("reqComId")
+        for element in root:
+            req_com_id = element.get("reqComId")
             if not req_com_id or req_com_id == "None":
                 continue
 
-            entrant_id = child.get("entrantId", "")
-            competition_id = child.get("competitionId", "")
-            entry = (entrant_id, req_com_id, competition_id, is_budget, is_agree)
+            entrant_id = element.get("entrantId", "")
+            competition_id = element.get("competitionId", "")
+            entry = (
+                entrant_id,
+                req_com_id,
+                competition_id,
+                is_budget,
+                is_agree,
+                is_priority_step,
+            )
+            if entry not in priorities:
+                priorities.append(entry)
 
-            if entry not in priority_entries:
-                priority_entries.append(entry)
-
-    return priority_entries
-
-
-if __name__ == "__main__":
-    directory_path = "path/to/xml/files"
-    priorities = get_priority_list(directory_path)
-    for p in priorities:
-        print(p)
+    return priorities
