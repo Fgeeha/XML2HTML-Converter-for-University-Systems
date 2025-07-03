@@ -14,14 +14,14 @@ class AppConfig(BaseModel):
     dir_name_file_priority: str = "file_priority"
     data_time_format: str = "%d%m%Y %H-%M-%S"
 
-    use_snils: dict[str:bool] = {
+    use_snils: dict[str, bool] = {
         "bak": True,
         "mag": True,
         "spo": False,
         "asp": False,
     }
 
-    pk_id: dict[str:int] = {
+    pk_id: dict[str, int] = {
         "bak": 1812524082527334653,
         "mag": 1812595423435682045,
         "spo": 1812599375173644541,
@@ -35,7 +35,7 @@ class AppConfig(BaseModel):
         f"enr_recommended_enrollment_list_{pk_id['mag']}.zip"
     )
 
-    name_pk: dict[str:str] = {
+    name_pk: dict[str, str] = {
         "bak": f"enr_rating_{pk_id['bak']}",
         "mag": f"enr_rating_{pk_id['mag']}",
         "spo": f"enr_rating_{pk_id['spo']}",

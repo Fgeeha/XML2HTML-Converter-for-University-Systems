@@ -16,7 +16,7 @@ def ensure_directory(path: Path) -> None:
 def timestamped_dump_dir(base_dir: Path, debug: bool) -> Path:
     """Prepare a dump directory with a timestamp if not in debug mode."""
     if debug:
-        return base_dir  # no dumping in debug mode
+        return base_dir
 
     now = datetime.now().strftime("%d%m%Y %H-%M-%S")
     dump_dir = base_dir / now
@@ -26,7 +26,10 @@ def timestamped_dump_dir(base_dir: Path, debug: bool) -> Path:
 
 
 def extract_priority_zip(
-    zip_path: Path, dest_dir: Path, dump_dir: Path, debug: bool
+    zip_path: Path,
+    dest_dir: Path,
+    dump_dir: Path,
+    debug: bool,
 ) -> None:
     """Extract a priority zip file and optionally move it to dump."""
     if dest_dir.exists():
