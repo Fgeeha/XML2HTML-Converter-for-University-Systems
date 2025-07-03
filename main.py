@@ -1,5 +1,7 @@
 import logging
+
 from src.initializing_creation import main
+
 
 def setup_logger() -> logging.Logger:
     """
@@ -11,12 +13,14 @@ def setup_logger() -> logging.Logger:
     )
     return logging.getLogger(__name__)
 
+
 if __name__ == "__main__":
     logger = setup_logger()
     try:
         main()
     except Exception:
         import traceback
+
         logger.warning(traceback.format_exc())
     finally:
         pass

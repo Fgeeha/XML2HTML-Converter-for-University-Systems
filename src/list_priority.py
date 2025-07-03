@@ -1,6 +1,13 @@
 import os
-from defusedxml.ElementTree import parse, XMLParser
-from typing import List, Tuple
+from typing import (
+    List,
+    Tuple,
+)
+
+from defusedxml.ElementTree import (
+    parse,
+    XMLParser,
+)
 
 
 def get_list_priority(dir_name: str) -> List[Tuple[str, str, str, bool, bool, bool]]:

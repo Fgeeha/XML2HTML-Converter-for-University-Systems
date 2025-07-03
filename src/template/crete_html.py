@@ -1,7 +1,10 @@
 import os
 import sys
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import (
+    List,
+    Optional,
+)
 
 from defusedxml.ElementTree import parse
 from jinja2 import (
@@ -9,8 +12,8 @@ from jinja2 import (
     FileSystemLoader,
 )
 
-from src.list_priority import get_priority_list
 from src.core.config import settings
+from src.list_priority import get_priority_list
 
 
 @dataclass

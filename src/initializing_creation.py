@@ -1,8 +1,8 @@
-import shutil
 import gzip
-from zipfile import ZipFile
+import shutil
 from datetime import datetime
 from pathlib import Path
+from zipfile import ZipFile
 
 from src.core.config import settings
 from src.template.crete_html import create_html
