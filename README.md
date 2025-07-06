@@ -25,9 +25,17 @@ cd parse_xml_file_volgau
 
 2. Install dependencies:
 
+mac or linux
 ```bash
 python3 -m venv venv
 . venv/bin/activate
+pip install -r requirements.txt
+```
+
+Windows:
+```bash
+python3 -m venv venv
+.venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
@@ -35,18 +43,13 @@ OR use [poetry](https://python-poetry.org/docs)
 
 ```bash
 poetry install
+poetry shell
 ```
 
 3. Set up environment variables by copying the template:
 
 ```bash
 cp .env.template .env
-```
-
-OR
-
-```bash
-poetry shell
 ```
 
 Configure the environment variables as necessary.
@@ -57,6 +60,12 @@ The main entry point of the application is located in `main.py`. To run the scri
 
 ```bash
 python main.py
+```
+
+OR use poetry
+
+```bash
+poetry run python ./main.py
 ```
 
 The application will initiate XML file parsing, and generates an html file with the entrants' rating at the output. Therefore, **you need to put xml files in the root.**
@@ -127,7 +136,7 @@ git push origin --tags
 If you created the wrong tag by mistake, you can delete it locally and in a remote repository.:
 ```bash
 # Delete a local tag
-git tag -d v2.0.3
+`git tag -d v2.0.3`
 
 # Remove tag from remote repository
 git push origin --delete v2.0.3
