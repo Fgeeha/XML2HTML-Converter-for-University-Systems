@@ -1,31 +1,28 @@
 [tool.poetry]
 name = "parse-xml-file-volgau"
-version = "0.1.0"
-description = ""
+version = "0.2.0"
+description = "XML to HTML converter for university enrollment systems"
 authors = ["Fgeeha <33605615+Fgeeha@users.noreply.github.com>"]
 readme = "README.md"
 package-mode = false
 
 [tool.poetry.dependencies]
-python = ">=3.11,<3.13"
-pyinstaller = "^6.12.0"
-pydantic-settings = "^2.8.1"
-pydantic = "^2.11.1"
-logging = "^0.4.9.6"
+python = ">=3.11,<3.14"
+pydantic-settings = "^2.12.0"
+pydantic = "^2.12.5"
 jinja2 = "^3.1.6"
 defusedxml = "^0.7.1"
 
-
 [tool.poetry.group.dev.dependencies]
-isort = "*"
-pre-commit = "*"
-black = "*"
-flake8 = "*"
+pyinstaller = "^6.18.0"
+isort = "^7.0.0"
+pre-commit = "^4.2.0"
+black = "^26.1.0"
+flake8 = "^7.3.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
 
 [tool.isort]
 profile = "black"
@@ -42,7 +39,7 @@ combine_star = true
 skip_gitignore = true
 balanced_wrapping = true
 force_grid_wrap = 2
-src_paths = ["src",]
+src_paths = ["src"]
 skip_glob = [
     ".git",
     ".idea",
@@ -53,3 +50,6 @@ skip_glob = [
     ".env",
 ]
 
+[tool.black]
+line-length = 120
+target-version = ["py311"]

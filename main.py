@@ -4,9 +4,7 @@ from src.initializing_creation import main
 
 
 def setup_logger() -> logging.Logger:
-    """
-    Настраивает и возвращает логгер для приложения.
-    """
+    """Настраивает и возвращает логгер для приложения."""
     logging.basicConfig(
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         level=logging.INFO,
@@ -19,8 +17,4 @@ if __name__ == "__main__":
     try:
         main()
     except Exception:
-        import traceback
-
-        logger.warning(traceback.format_exc())
-    finally:
-        pass
+        logger.exception("Критическая ошибка при выполнении приложения")

@@ -1,4 +1,7 @@
-from pydantic import BaseModel
+from pydantic import (
+    BaseModel,
+    model_validator,
+)
 from pydantic_settings import (
     BaseSettings,
     SettingsConfigDict,
@@ -12,7 +15,7 @@ class AppConfig(BaseModel):
     True - zip archives remain in the root folder
     """
     dir_name_file_priority: str = "file_priority"
-    data_time_format: str = "%d%m%Y %H-%M-%S"
+    date_time_format: str = "%d%m%Y %H-%M-%S"
 
     use_snils: dict[str, bool] = {
         "bak": True,
@@ -28,19 +31,24 @@ class AppConfig(BaseModel):
         "asp": 1812594156837662973,
     }
 
-    file_name_enr_recommended_bak: str = (
-        f"enr_recommended_enrollment_list_{pk_id['bak']}.zip"
-    )
-    file_name_enr_recommended_mag: str = (
-        f"enr_recommended_enrollment_list_{pk_id['mag']}.zip"
-    )
+    file_name_enr_recommended: dict[str, str] = {}
+    name_pk: dict[str, str] = {}
 
-    name_pk: dict[str, str] = {
-        "bak": f"enr_rating_{pk_id['bak']}",
-        "mag": f"enr_rating_{pk_id['mag']}",
-        "spo": f"enr_rating_{pk_id['spo']}",
-        "asp": f"enr_rating_{pk_id['asp']}",
-    }
+    @model_validator(mode="after")
+    def _compute_derived_fields(self) -> "AppConfig":
+        """Вычисляет производные поля на основе pk_id."""
+        if not self.file_name_enr_recommended:
+            self.file_name_enr_recommended = {
+                key: f"enr_recommended_enrollment_list_{pk}.zip"
+                for key, pk in self.pk_id.items()
+                if key in ("bak", "mag")
+            }
+        if not self.name_pk:
+            self.name_pk = {
+                key: f"enr_rating_{pk}"
+                for key, pk in self.pk_id.items()
+            }
+        return self
 
 
 class Settings(BaseSettings):

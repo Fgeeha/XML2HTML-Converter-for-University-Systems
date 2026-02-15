@@ -1,32 +1,39 @@
-import os
-from typing import (
-    List,
-    Tuple,
-)
+import logging
+from pathlib import Path
 
 from defusedxml.ElementTree import (
-    parse,
     XMLParser,
+    parse,
 )
 
 
-def get_list_priority(directory: str) -> List[Tuple[str, str, str, bool, bool, bool]]:
+logger = logging.getLogger(__name__)
+
+PriorityEntry = tuple[str, str, str, bool, bool, bool]
+"""(entrant_id, req_com_id, competition_id, is_budget, is_agree, is_priority_step)"""
+
+
+def get_list_priority(directory: str | Path) -> list[PriorityEntry]:
     """
-    Parse XML files in the given directory and return a list of tuples containing:
+    Парсит XML-файлы в указанной директории и возвращает список кортежей:
     (entrant_id, req_com_id, competition_id, is_budget, is_agree, is_priority_step).
     """
-    priorities: List[Tuple[str, str, str, bool, bool, bool]] = []
+    seen: set[PriorityEntry] = set()
+    priorities: list[PriorityEntry] = []
     parser = XMLParser(
         forbid_dtd=True,
         forbid_entities=True,
         forbid_external=True,
     )
 
-    for filename in os.listdir(directory):
-        file_path = os.path.join(directory, filename)
+    dir_path = Path(directory)
+    for file_path in dir_path.iterdir():
+        if not file_path.is_file():
+            continue
         try:
-            root = parse(file_path, parser=parser).getroot()
+            root = parse(str(file_path), parser=parser).getroot()
         except Exception:
+            logger.warning("Не удалось распарсить файл приоритетов: %s", file_path.name)
             continue
 
         is_budget = root.get("isBudget") == "true"
@@ -40,7 +47,7 @@ def get_list_priority(directory: str) -> List[Tuple[str, str, str, bool, bool, b
 
             entrant_id = element.get("entrantId", "")
             competition_id = element.get("competitionId", "")
-            entry = (
+            entry: PriorityEntry = (
                 entrant_id,
                 req_com_id,
                 competition_id,
@@ -48,7 +55,8 @@ def get_list_priority(directory: str) -> List[Tuple[str, str, str, bool, bool, b
                 is_agree,
                 is_priority_step,
             )
-            if entry not in priorities:
+            if entry not in seen:
+                seen.add(entry)
                 priorities.append(entry)
 
     return priorities

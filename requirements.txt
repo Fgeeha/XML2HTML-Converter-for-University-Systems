@@ -1,37 +1,10 @@
-altgraph==0.17.4
-annotated-types==0.7.0
-black==25.1.0
-cfgv==3.4.0
-click==8.1.8
-colorama==0.4.6
-defusedxml==0.7.1
-distlib==0.3.9
-filelock==3.18.0
-flake8==7.2.0
-identify==2.6.9
-isort==6.0.1
-Jinja2==3.1.6
-logging==0.4.9.6
-MarkupSafe==3.0.2
-mccabe==0.7.0
-mypy-extensions==1.0.0
-nodeenv==1.9.1
-packaging==24.2
-pathspec==0.12.1
-pefile==2023.2.7
-platformdirs==4.3.7
-pre_commit==4.2.0
-pycodestyle==2.13.0
-pydantic==2.11.1
-pydantic-settings==2.8.1
-pydantic_core==2.33.0
-pyflakes==3.3.0
-pyinstaller==6.12.0
-pyinstaller-hooks-contrib==2025.2
-python-dotenv==1.1.0
-pywin32-ctypes==0.2.3
-PyYAML==6.0.2
-setuptools==78.1.0
-typing-inspection==0.4.0
-typing_extensions==4.13.0
-virtualenv==20.29.3
+annotated-types==0.7.0 ; python_version >= "3.11" and python_version < "3.14"
+defusedxml==0.7.1 ; python_version >= "3.11" and python_version < "3.14"
+jinja2==3.1.6 ; python_version >= "3.11" and python_version < "3.14"
+markupsafe==3.0.2 ; python_version >= "3.11" and python_version < "3.14"
+pydantic-core==2.41.5 ; python_version >= "3.11" and python_version < "3.14"
+pydantic-settings==2.12.0 ; python_version >= "3.11" and python_version < "3.14"
+pydantic==2.12.5 ; python_version >= "3.11" and python_version < "3.14"
+python-dotenv==1.1.1 ; python_version >= "3.11" and python_version < "3.14"
+typing-extensions==4.15.0 ; python_version >= "3.11" and python_version < "3.14"
+typing-inspection==0.4.2 ; python_version >= "3.11" and python_version < "3.14"

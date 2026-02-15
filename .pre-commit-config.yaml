@@ -2,23 +2,23 @@ fail_fast: false
 exclude: ^.*\b(migrations)\b.*$
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.19.1
+    rev: v3.21.2
     hooks:
       - id: pyupgrade
-        args: [ --py38-plus ]
+        args: [--py311-plus]
 
   - repo: https://github.com/asottile/add-trailing-comma
-    rev: v3.1.0
+    rev: v4.0.0
     hooks:
       - id: add-trailing-comma
-        args: [ --py36-plus ]
+        args: [--py36-plus]
 
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.7
+    rev: v1.7.10
     hooks:
       - id: actionlint
         language: system
-        types: [ yaml ]
+        types: [yaml]
 
   - repo: https://github.com/myint/autoflake
     rev: v2.3.1
@@ -33,22 +33,21 @@ repos:
           ]
 
   - repo: https://github.com/psf/black
-    rev: 25.1.0
+    rev: 26.1.0
     hooks:
       - id: black
         language_version: python3.12
-        args: [ "-S" ]
 
   - repo: https://github.com/pycqa/isort
-    rev: 6.0.1
+    rev: 7.0.0
     hooks:
       - id: isort
 
   - repo: https://github.com/pycqa/flake8
-    rev: 7.2.0
+    rev: 7.3.0
     hooks:
       - id: flake8
-        args: [ --config=.flake8, --max-line-length=120 ]
+        args: [--config=.flake8, --max-line-length=120]
         exclude: .git|__pycache__
         language_version: python3.12
         additional_dependencies:
