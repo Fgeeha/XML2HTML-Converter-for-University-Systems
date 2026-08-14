@@ -25,6 +25,8 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class Student:
+    """Строка абитуриента в итоговой таблице."""
+
     number: int | None = None
     snils: str | None = None
     total_points: str | None = None
@@ -40,6 +42,8 @@ class Student:
 
 @dataclass
 class ProgramInfo:
+    """Заголовочные данные образовательной программы."""
+
     faculty: str | None = None
     subject: str | None = None
     spec: str | None = None
@@ -140,7 +144,7 @@ def _resolve_template_dir() -> str:
 
 
 def _collect_separate_quota_snils(root_node, pk_name: str) -> list[str]:
-    """Собирает список СНИЛС абитуриентов из конкурсов типа 'Отдельная квота'."""
+    """Собирает СНИЛС абитуриентов из конкурсов 'Отдельная квота'."""
     result: list[str] = []
     if pk_name not in ("bak", "mag"):
         return result
@@ -171,7 +175,7 @@ def _process_program(
     row_priority: list[PriorityEntry],
     snils_in_separate_quota: list[str],
 ) -> tuple[dict | None, dict | None]:
-    """Обрабатывает одну образовательную программу и возвращает (info, students)."""
+    """Обрабатывает образовательную программу -> (info, students)."""
     meta = _extract_program_meta(row_program, pk_name)
     if meta is None:
         return None, None
@@ -222,9 +226,8 @@ def _extract_program_meta(row_program, pk_name: str) -> dict | None:
         pk_name,
     )
 
-    if plan_recruitment is not None:
-        if compensation_type != "по договору" and pk_name != "spo":
-            plan_recruitment = f"{plan_recruitment} за исключением квот"
+    if plan_recruitment is not None and compensation_type != "по договору" and pk_name != "spo":
+        plan_recruitment = f"{plan_recruitment} за исключением квот"
 
     return {
         "faculty": faculty,
@@ -324,10 +327,12 @@ class _StudentCollector:
         self._collect_vip_priority(entry, edu_program_id)
 
     def _collect_preference(self, entry) -> None:
+        """Фиксирует наличие особого права у абитуриента."""
         preference = entry.get("preferenceCategoryTitle")
         self.preference_titles.append("Да" if preference is not None else "Нет")
 
     def _collect_snils(self, entry) -> None:
+        """Добавляет СНИЛС либо личный номер, если СНИЛС скрыт."""
         snils = entry.get("snils")
         competition_type_title = ""  # будет установлен из контекста
         number = None
@@ -347,6 +352,7 @@ class _StudentCollector:
             self.snils_list.append(snils)
 
     def _collect_accepted(self, entry) -> None:
+        """Фиксирует признак зачисления абитуриента."""
         accepted_raw = entry.get("acceptedEntrant")
         snils = entry.get("snils")
         number = None
@@ -357,11 +363,13 @@ class _StudentCollector:
             self.accepted.append("Да" if accepted_raw == "true" else "Нет")
 
     def _collect_status(self, entry) -> None:
+        """Добавляет статус заявления, если он указан."""
         status = entry.get("status")
         if status is not None:
             self.statuses.append(status)
 
     def _collect_total_points(self, entry) -> None:
+        """Собирает сумму баллов, для СПО - средний балл."""
         if self.pk_name == "spo":
             avg_mark = entry.get("averageEduInstitutionMark", "-")
             self.average_marks.append(avg_mark if avg_mark else "-")
@@ -371,6 +379,7 @@ class _StudentCollector:
             self.total_points.append(total_points)
 
     def _collect_marks(self, entry, sub_row_program) -> None:
+        """Собирает баллы по предметам и баллы за достижения."""
         marks_raw = entry.get("marks")
         if marks_raw is not None:
             if self.pk_name == "spo" and marks_raw == "":
@@ -390,16 +399,19 @@ class _StudentCollector:
                 self.total_points_id.append(achievement_mark)
 
     def _collect_original_passed(self, entry) -> None:
+        """Фиксирует факт подачи оригинала документа."""
         original = entry.get("originalIn")
         if original is not None:
             self.original_passed.append("Да" if original == "true" else "Нет")
 
     def _collect_priority(self, entry) -> None:
+        """Добавляет печатный приоритет заявления."""
         priority = entry.get("printPriority")
         if priority is not None:
             self.print_priorities.append(priority)
 
     def _collect_vip_priority(self, entry, edu_program_id: str) -> None:
+        """Отмечает высший приоритет по данным приоритетов."""
         if self.pk_name not in ("bak", "mag"):
             return
 
@@ -492,5 +504,7 @@ def _render_html(template_path: str, context: dict, output_path: str) -> None:
     )
     template = env.get_template("template.html")
     html_content = template.render(context)
-    with open(output_path, "w", encoding="utf-8") as f:
-        f.write(html_content)
+    # Имя приходит из конфига: отбрасываем путь, пишем только в рабочую
+    # директорию
+    safe_path = Path.cwd() / Path(output_path).name
+    safe_path.write_text(html_content, encoding="utf-8")

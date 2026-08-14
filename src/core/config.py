@@ -9,6 +9,8 @@ from pydantic_settings import (
 
 
 class AppConfig(BaseModel):
+    """Параметры приемной кампании и режима работы приложения."""
+
     debug: bool = False
     """
     False - transferring files to a folder dump
@@ -49,6 +51,8 @@ class AppConfig(BaseModel):
 
 
 class Settings(BaseSettings):
+    """Корневые настройки, читаемые из .env с префиксом APP_CONFIG__."""
+
     model_config = SettingsConfigDict(
         env_file=(".env", ".env.template"),
         case_sensitive=False,

@@ -9,13 +9,15 @@ from defusedxml.ElementTree import (
 logger = logging.getLogger(__name__)
 
 PriorityEntry = tuple[str, str, str, bool, bool, bool]
-"""(entrant_id, req_com_id, competition_id, is_budget, is_agree, is_priority_step)"""
+"""(entrant_id, req_com_id, competition_id,
+is_budget, is_agree, is_priority_step)"""
 
 
 def get_list_priority(directory: str | Path) -> list[PriorityEntry]:
     """
     Парсит XML-файлы в указанной директории и возвращает список кортежей:
-    (entrant_id, req_com_id, competition_id, is_budget, is_agree, is_priority_step).
+    (entrant_id, req_com_id, competition_id,
+    is_budget, is_agree, is_priority_step).
     """
     seen: set[PriorityEntry] = set()
     priorities: list[PriorityEntry] = []
@@ -30,7 +32,8 @@ def get_list_priority(directory: str | Path) -> list[PriorityEntry]:
         if not file_path.is_file():
             continue
         try:
-            # DUO135: все forbid_* заданы в XMLParser выше, dlint не отслеживает переменную
+            # DUO135: все forbid_* заданы в XMLParser выше,
+            # dlint не отслеживает переменную
             root = parse(str(file_path), parser=parser).getroot()  # noqa: DUO135
         except Exception:
             logger.warning("Не удалось распарсить файл приоритетов: %s", file_path.name)
