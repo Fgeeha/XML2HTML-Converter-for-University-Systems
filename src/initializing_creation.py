@@ -8,7 +8,6 @@ from zipfile import ZipFile
 from src.core.config import settings
 from src.template.create_html import create_html
 
-
 logger = logging.getLogger(__name__)
 
 

@@ -44,10 +44,7 @@ class AppConfig(BaseModel):
                 if key in ("bak", "mag")
             }
         if not self.name_pk:
-            self.name_pk = {
-                key: f"enr_rating_{pk}"
-                for key, pk in self.pk_id.items()
-            }
+            self.name_pk = {key: f"enr_rating_{pk}" for key, pk in self.pk_id.items()}
         return self
 
 

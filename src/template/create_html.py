@@ -16,10 +16,9 @@ from jinja2 import (
 
 from src.core.config import settings
 from src.list_priority import (
-    PriorityEntry,
     get_list_priority,
+    PriorityEntry,
 )
-
 
 logger = logging.getLogger(__name__)
 

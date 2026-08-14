@@ -2,10 +2,9 @@ import logging
 from pathlib import Path
 
 from defusedxml.ElementTree import (
-    XMLParser,
     parse,
+    XMLParser,
 )
-
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +30,8 @@ def get_list_priority(directory: str | Path) -> list[PriorityEntry]:
         if not file_path.is_file():
             continue
         try:
-            root = parse(str(file_path), parser=parser).getroot()
+            # DUO135: все forbid_* заданы в XMLParser выше, dlint не отслеживает переменную
+            root = parse(str(file_path), parser=parser).getroot()  # noqa: DUO135
         except Exception:
             logger.warning("Не удалось распарсить файл приоритетов: %s", file_path.name)
             continue
